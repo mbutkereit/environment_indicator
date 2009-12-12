@@ -10,7 +10,7 @@
  */
 
 /**
- * Implementation of hook_help().
+ * Implement hook_help().
  */
 function environment_indicator_help($path, $arg) {
   switch ($path) {
@@ -35,22 +35,28 @@ function environment_indicator_help($path, $arg) {
 }
 
 /**
- * Implementation of hook_perm().
+ * Implement hook_perm().
  */
 function environment_indicator_perm() {
-  return array('access environment indicator');
+  return array(
+    'access environment indicator' => array(
+      'title' => t('Access environment indocator'),
+      'description' => t('View the environment indicator'),
+    )
+  );
 }
 
 /**
- * Implementation of hook_menu().
+ * Implement hook_menu().
  */
 function environment_indicator_menu() {
-  $items['admin/settings/environment_indicator'] = array(
+  $items['admin/config/development/environment_indicator'] = array(
     'title' => 'Environment indicator',
-    'description' => 'Adjust environment indicator menu settings.',
+    'description' => 'Adjust settings for the Environment Indicator.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('environment_indicator_settings'),
     'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
   );
   return $items;
 }
@@ -105,7 +111,7 @@ function environment_indicator_settings() {
 }
 
 /**
- * Implementation of hook_init().
+ * Implement hook_init().
  */
 function environment_indicator_init() {
   if (!user_access('access environment indicator') || !variable_get('environment_indicator_enabled', 1)) {
@@ -125,22 +131,23 @@ function environment_indicator_init() {
   }
   
   $path = drupal_get_path('module', 'environment_indicator');
-  drupal_add_css($path .'/environment_indicator.css', 'module', 'all', FALSE);
-
+  drupal_add_css($path .'/environment_indicator.css', array('preprocess' => FALSE));
+  
   // Performance: Defer execution.
-  drupal_add_js($path .'/environment_indicator.min.js', 'module', 'header', TRUE);
-
+  drupal_add_js($path .'/environment_indicator.min.js');
+  //drupal_add_js($path .'/environment_indicator.js', array('preprocess' => FALSE));
+  
   if ($setting = variable_get('environment_indicator_margin', 1)) {
-    $settings['margin'] = $setting;
+    $settings['margin'] = check_plain($setting);
   }
   if ($setting = variable_get('environment_indicator_position', 'left')) {
-    $settings['position'] = $setting;
+    $settings['position'] = check_plain($setting);
   }
   if ($setting = variable_get('environment_indicator_text', 'ENVIRONMENT INDICATOR')) {
-    $settings['text'] = $setting;
+    $settings['text'] = check_plain($setting);
   }
   if ($setting = variable_get('environment_indicator_color', '#d00c0c')) {
-    $settings['color'] = $setting;
+    $settings['color'] = check_plain($setting);
   }
 
   drupal_add_js(array('environment_indicator' => $settings), 'setting');
