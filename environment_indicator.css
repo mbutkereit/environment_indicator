@@ -2,8 +2,9 @@
 
 /**
  * @file
- * Environment info strip.
+ * Environment info css.
  *
+ * @author Tom Kirkpatrick (mrfelton), www.kirkdesigns.co.uk
  */
 
 #environment-indicator {
@@ -16,6 +17,7 @@
   text-align: center;
   font-weight: bold;
   z-index: 1000;
+  padding-top: 5px;
 }
 
 body.environment-indicator-left #environment-indicator {

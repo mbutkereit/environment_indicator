@@ -6,6 +6,7 @@
  * Adds a coloured strip to the side of the site informing the user which
  * environment they are in (Development, Staging Production etc).
  *
+ * @author Tom Kirkpatrick (mrfelton), www.kirkdesigns.co.uk
  */
 
 /**
@@ -84,7 +85,7 @@ function environment_indicator_settings() {
   $form['environment_indicator_text'] = array(
     '#type' => 'textfield',
     '#title' => t('Text to display'),
-    '#default_value' => variable_get('environment_indicator_text', ''),
+    '#default_value' => variable_get('environment_indicator_text', 'ENVIRONMENT INDICATOR'),
     '#description' => t('Text to display in the environment indicator. Override this for each environment in settings.php.'),
   );
   $form['environment_indicator_color'] = array(
@@ -94,40 +95,51 @@ function environment_indicator_settings() {
     '#description' => t('The colour of the environment indicator. Override this for each environment in settings.php.'),
     '#size' => 7,
   );
+  $form['environment_indicator_suppress_pages'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Turn off Environment Indicator on these pages'),
+    '#default_value' => variable_get('environment_indicator_suppress_pages', "imagecrop/*\n"),
+    '#description' => t("Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are '<em>blog</em>' for the blog page and '<em>blog/*</em>' for every personal blog. '<em>&lt;front&gt;</em>' is the front page."),
+  );
   return system_settings_form($form);
 }
 
 /**
  * Implementation of hook_init().
- *
- * We can't move this into environment_indicator_footer(), because PHP-only based themes
- * like chameleon load and output scripts and stylesheets in front of
- * theme_closure(), so we ensure our styles and scripts are loaded on
- * all pages via hook_init().
  */
 function environment_indicator_init() {
-  if (!user_access('access environment indicator') || environment_indicator_suppress(FALSE)) {
+  if (!user_access('access environment indicator') || !variable_get('environment_indicator_enabled', 1)) {
     return;
   }
 
-  global $user, $language;
-
+  // Do not show the indicator on select pages.
+  $off_pages = variable_get('environment_indicator_suppress_pages', "imagecrop/*\n");
+  $path = drupal_get_path_alias($_GET['q']);
+  // Compare with the internal and path alias (if any).
+  $page_match = drupal_match_path($path, $off_pages);
+  if ($path != $_GET['q']) {
+    $page_match = $page_match || drupal_match_path($_GET['q'], $off_pages);
+  }
+  if ($page_match) {
+    return;
+  }
+  
   $path = drupal_get_path('module', 'environment_indicator');
   drupal_add_css($path .'/environment_indicator.css', 'module', 'all', FALSE);
 
   // Performance: Defer execution.
-  drupal_add_js($path .'/environment_indicator.js', 'module', 'header', TRUE);
+  drupal_add_js($path .'/environment_indicator.min.js', 'module', 'header', TRUE);
 
   if ($setting = variable_get('environment_indicator_margin', 1)) {
     $settings['margin'] = $setting;
   }
-  if ($setting = variable_get('environment_indicator_position', 1)) {
+  if ($setting = variable_get('environment_indicator_position', 'left')) {
     $settings['position'] = $setting;
   }
-  if ($setting = variable_get('environment_indicator_text', 1)) {
+  if ($setting = variable_get('environment_indicator_text', 'ENVIRONMENT INDICATOR')) {
     $settings['text'] = $setting;
   }
-  if ($setting = variable_get('environment_indicator_color', 1)) {
+  if ($setting = variable_get('environment_indicator_color', '#d00c0c')) {
     $settings['color'] = $setting;
   }
 
@@ -147,9 +159,6 @@ function environment_indicator_init() {
  *   displayed. If FALSE is passed, the suppression state is returned.
  */
 function environment_indicator_suppress($set = TRUE) {
-  if (!variable_get('environment_indicator_enabled', 1)) {
-    return TRUE;
-  }
   static $suppress = FALSE;
   // drupal_add_js() must only be invoked once.
   if (!empty($set) && $suppress === FALSE) {
