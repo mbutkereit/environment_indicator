@@ -9,7 +9,7 @@
 
 #environment-indicator {
   background: #d00c0c;
-  position: fixed;
+  position: absolute;
   top: 0px;
   bottom: 0px;
   width: 30px;
@@ -18,6 +18,9 @@
   font-weight: bold;
   z-index: 1000;
   padding-top: 5px;
+}
+body > #environment-indicator {
+  position: fixed;
 }
 
 body.environment-indicator-left #environment-indicator {
