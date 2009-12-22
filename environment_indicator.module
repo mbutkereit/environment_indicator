@@ -68,7 +68,7 @@ function environment_indicator_settings() {
   $form['environment_indicator_enabled'] = array(
     '#type' => 'radios',
     '#title' => t('Status'),
-    '#default_value' => variable_get('environment_indicator_enabled', 1),
+    '#default_value' => variable_get('environment_indicator_enabled', 1)? '1' : '0',
     '#options' => array(t('Disabled'), t('Enabled')),
     '#description' => t('Should the Environment Indicator display?'),
   );
