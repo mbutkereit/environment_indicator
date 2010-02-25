@@ -35,12 +35,12 @@ function environment_indicator_help($path, $arg) {
 }
 
 /**
- * Implement hook_perm().
+ * Implement hook_permission().
  */
-function environment_indicator_perm() {
+function environment_indicator_permission() {
   return array(
     'access environment indicator' => array(
-      'title' => t('Access environment indocator'),
+      'title' => t('Access environment indicator'),
       'description' => t('View the environment indicator'),
     )
   );
