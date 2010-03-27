@@ -1,7 +1,7 @@
 ; $Id$
 name = Environment Indicator
 description = Adds a coloured strip to the side of the site informing the user which environemnt they are in (Development, Staging Production etc).
-package = Administration
+package = Development
 core = 7.x
 files[] = environment_indicator.module
 files[] = environment_indicator.install
