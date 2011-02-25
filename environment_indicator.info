@@ -1,4 +1,3 @@
-; $Id$
 name = Environment Indicator
 description = Adds a coloured strip to the side of the site informing the user which environemnt they are in (Development, Staging Production etc).
 package = Development
