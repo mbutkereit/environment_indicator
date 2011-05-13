@@ -64,6 +64,9 @@ function environment_indicator_menu() {
  * Module settings form.
  */
 function environment_indicator_settings() {
+  drupal_add_library('system', 'farbtastic');
+  drupal_add_js(drupal_get_path('module', 'environment_indicator') .'/environment_indicator.admin.js');
+  
   $form['environment_indicator_enabled'] = array(
     '#type' => 'radios',
     '#title' => t('Status'),
@@ -99,6 +102,9 @@ function environment_indicator_settings() {
     '#default_value' => variable_get('environment_indicator_color', '#d00c0c'),
     '#description' => t('The colour of the environment indicator. Override this for each environment in settings.php.'),
     '#size' => 7,
+  );
+  $form['environment_indicator_color_picker'] = array(
+    '#markup' => '<div id="environment-indicator-color-picker"></div>',
   );
   $form['environment_indicator_suppress_pages'] = array(
     '#type' => 'textarea',
