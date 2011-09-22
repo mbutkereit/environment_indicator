@@ -159,23 +159,8 @@ function environment_indicator_init() {
 }
 
 /**
- * Suppress display of administration menu.
- *
- * This function should be called from within another module's page callback
- * (preferably using module_invoke()) when the indicator should not be displayed.
- * This is useful for modules that implement popup pages or other special
- * pages where the menu would be distracting or break the layout.
- *
- * @param $set
- *   Defaults to TRUE. If called before hook_footer, the menu will not be
- *   displayed. If FALSE is passed, the suppression state is returned.
+ * Implements hook_overlay_child_initialize().
  */
-function environment_indicator_suppress($set = TRUE) {
-  static $suppress = FALSE;
-  // drupal_add_js() must only be invoked once.
-  if (!empty($set) && $suppress === FALSE) {
-    $suppress = TRUE;
-    drupal_add_js(array('environment_indicator' => array('suppress' => 1)), 'setting');
-  }
-  return $suppress;
+function environment_indicator_overlay_child_initialize() {
+  drupal_add_js(array('environment_indicator' => array('suppress' => 1)), 'setting');
 }
