@@ -1,6 +1,8 @@
 /**
  * @file
  * Environment indicator admin js
+ *
+ * @author Tom Kirkpatrick (mrfelton), www.systemseed.com
  */
 
 (function ($) {

@@ -5,7 +5,7 @@
  * Adds a coloured strip to the side of the site informing the user which
  * environment they are in (Development, Staging Production etc).
  *
- * @author Tom Kirkpatrick (mrfelton), www.kirkdesigns.co.uk
+ * @author Tom Kirkpatrick (mrfelton), www.systemseed.com
  */
 
 /**

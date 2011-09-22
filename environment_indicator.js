@@ -1,9 +1,8 @@
-
 /**
  * @file
  * Environment info JavaScript.
  *
- * @author Tom Kirkpatrick (mrfelton), www.kirkdesigns.co.uk
+ * @author Tom Kirkpatrick (mrfelton), www.systemseed.com
  */
 
 (function ($) {
@@ -66,7 +65,7 @@ Drupal.behaviors.environmentIndicator = {
           
           // Adjust the width of the toolbar
           if ($("#toolbar").length) {
-            $("#toolbar").css('margin-'+settings.environment_indicator.position, '30px');
+            $("#toolbar").css('margin-'+settings.environment_indicator.position, '10px');
           }
         }
       }
