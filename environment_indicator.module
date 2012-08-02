@@ -13,7 +13,7 @@
  */
 function environment_indicator_help($path, $arg) {
   switch ($path) {
-    case 'admin/settings/environment_indicator':
+    case 'admin/config/development/environment_indicator':
       return t('The Environment Indicator adds a coloured strip to the side of the site informing you which environment you\'re currently in (Development, Staging Production etc). Use the settings below to customize the appearance of the indicator. You may override these settings in your settings.php file in each of your environments.');
 
     case 'admin/help#environment_indicator':
