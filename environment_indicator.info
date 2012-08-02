@@ -4,3 +4,5 @@ package = Development
 core = 7.x
 files[] = environment_indicator.module
 files[] = environment_indicator.install
+
+configure = admin/config/development/environment_indicator
