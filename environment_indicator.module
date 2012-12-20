@@ -19,7 +19,7 @@ function environment_indicator_help($path, $arg) {
     case 'admin/help#environment_indicator':
       $output = '<p>' .t('The Environment Indicator adds a coloured strip to the side of the site informing you which environment you\'re currently in (Development, Staging Production etc') .'</p>';
       
-      $output .= '<p>'. t('The Environment Indicator <a href="@settings">settings page</a> allows you to modify some elements of the indicator\'s behavior and appearance. Since the appearance of the indicator is dependent on your site theme, substantial customisations require modifications to your site\'s theme and CSS files.', array('@settings' => url('admin/settings/environment_indicator'))) . '</p>';
+      $output .= '<p>'. t('The Environment Indicator <a href="@settings">settings page</a> allows you to modify some elements of the indicator\'s behavior and appearance. Since the appearance of the indicator is dependent on your site theme, substantial customisations require modifications to your site\'s theme and CSS files.', array('@settings' => url('admin/config/development/environment_indicator'))) . '</p>';
       
       $output .= '<p>'. t('The Environment Indicator\'s visibility depends upon the permissions of the viewer. The <a href="@permissions">access environment indicator</a> permission must be enabled for a user role in order for users of that role to see the indicator.', array('@permissions' => url('admin/user/permissions', array('fragment' => 'module-environment_indicator')))) .'</p>';
       
