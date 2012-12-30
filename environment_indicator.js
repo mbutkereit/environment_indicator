@@ -58,9 +58,91 @@ Drupal.behaviors.environmentIndicator = {
           }
         }
       }
+
+      // Applies a coloured bar to the favicon
+      Drupal.environmentIndicator.affectFavicon(settings.environment_indicator.color);
+      
       $('body:not(.environment-indicator-processed)', context).addClass('environment-indicator-processed');
     }
   }
 };
-  
+
+// Applies a coloured bar to the favicon
+Drupal.environmentIndicator.affectFavicon = function (color) {
+  var i,
+      linkTags = document.getElementsByTagName("link"),
+      icon = null,
+      rel,
+      iconImg,
+      flatColor;
+
+  for (i = linkTags.length; i >= 0; i -= 1) {
+    if (typeof linkTags[i] !== "object") {
+      continue;
+    }
+    rel = linkTags[i].getAttribute("rel");
+    if (typeof rel === "undefined") {
+      continue;
+    }
+
+    if (rel === "shortcut icon" || rel === "icon") {
+      icon = linkTags[i];
+      break;
+    }
+  }
+
+  iconImg = new Image();
+  flatColor = Drupal.environmentIndicator.splitColor(color).join(",");
+
+  // See: https://developer.mozilla.org/en/Canvas_tutorial/Using_images
+  iconImg.onload = function () {
+    var canvas, ctx, newIcon;
+
+    canvas = document.createElement("canvas");
+    canvas.setAttribute("width", "16px");
+    canvas.setAttribute("height", "16px");
+    ctx = canvas.getContext("2d");  
+
+    ctx.lineCap = "butt";
+    ctx.drawImage(iconImg, 0, 0);  
+
+    ctx.beginPath();
+      ctx.strokeStyle = "rgba(" + flatColor + ",1)";
+      ctx.lineWidth = 4;
+      ctx.moveTo(0, 0);
+      ctx.lineTo(canvas.width, 0);
+    ctx.stroke();
+
+    ctx.beginPath();
+      ctx.strokeStyle = "rgba(0,0,0,0.7)";
+      ctx.lineWidth = 1;
+      ctx.moveTo(0, 2.5);
+      ctx.lineTo(canvas.width, 2.5);
+    ctx.stroke();
+
+    // See: http://www.p01.org/releases/DEFENDER_of_the_favicon/
+    try {
+      (newIcon = icon.cloneNode(true)).setAttribute("href", ctx.canvas.toDataURL());
+      icon.parentNode.replaceChild(newIcon, icon);
+    } catch (e) {
+      // Nobody cares if a favicon goes untweaked
+    }
+  };
+
+  iconImg.src = icon.href;
+
+  return this;
+};
+
+// See: http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+Drupal.environmentIndicator.splitColor = function (color) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
+
+  return result ? [
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16)
+  ] : null;
+};
+
 })(jQuery);
