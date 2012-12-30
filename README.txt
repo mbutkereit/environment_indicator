@@ -47,10 +47,8 @@ environment_indicator_enabled
 -- CONTACT --
 
 Author maintainers:
-* Tom Kirkpatrick (mrfelton), www.kirkdesigns.co.uk
+* Tom Kirkpatrick (mrfelton), www.systemseed.com
 
 
 This project has been sponsored by:
-* KIRKDESIGNS - Visit http://www.kirkdesigns.co.uk for more information.
-
-
+* SystemSeed - Visit http://www.systemseed.com for more information.
