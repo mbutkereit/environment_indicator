@@ -83,7 +83,7 @@ function environment_indicator_init() {
   }
   
   $path = drupal_get_path('module', 'environment_indicator');
-  drupal_add_css($path .'/environment_indicator.css', array('preprocess' => FALSE));
+  drupal_add_css($path .'/environment_indicator.css', array('every_page' => TRUE));
   
   // Performance: Defer execution.
   drupal_add_js($path .'/environment_indicator.min.js');
