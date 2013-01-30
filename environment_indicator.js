@@ -3,6 +3,9 @@
  * Environment info JavaScript.
  *
  * @author Tom Kirkpatrick (mrfelton), www.systemseed.com
+ *
+ * affectFavicon() originally written by James Andres for WhatSite.js
+ * (https://github.com/jamesandres/WhatSite)
  */
 
 (function ($) {
