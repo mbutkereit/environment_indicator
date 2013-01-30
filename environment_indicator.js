@@ -32,7 +32,7 @@ Drupal.behaviors.environmentIndicator = {
       return;
     };
     
-    if ($('body:not(.environment-indicator-processed|.overlay)', context).length) {
+    if ($('body:not(.environment-indicator-processed, .overlay)', context).length) {
       settings.environment_indicator.cssClass = 'environment-indicator-' + settings.environment_indicator.position;
       
       // If we don't have an environment indicator, inject it into the document.
