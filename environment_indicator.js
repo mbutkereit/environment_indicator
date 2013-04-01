@@ -45,10 +45,11 @@ Drupal.behaviors.environmentIndicator = {
         $('body', context).addClass(settings.environment_indicator.cssClass);
 
         // Set the colour.
+        $environmentIndicator = $('#environment-indicator', context);
         $environmentIndicator.css('background-color', settings.environment_indicator.color);
 
         // Make the text appear vertically
-        $environmentIndicator.html($environmentIndicator.text().replace(/(.)/g,"$1<br />"));
+        $environmentIndicator.html(settings.environment_indicator.text.replace(/(.)/g,"$1<br />"));
 
         // Adjust the margin.
         if (settings.environment_indicator.margin) {
@@ -71,6 +72,10 @@ Drupal.behaviors.environmentIndicator = {
 
 // Applies a coloured bar to the favicon
 Drupal.environmentIndicator.affectFavicon = function (color) {
+  if (!Drupal.environmentIndicator.canvasSupport()) {
+    return;
+  }
+
   var i,
       linkTags = document.getElementsByTagName("link"),
       icon = null,
@@ -98,12 +103,18 @@ Drupal.environmentIndicator.affectFavicon = function (color) {
 
   // See: https://developer.mozilla.org/en/Canvas_tutorial/Using_images
   iconImg.onload = function () {
-    var canvas, ctx, newIcon;
+    var canvas = document.createElement('canvas');
 
-    canvas = document.createElement("canvas");
+    //canvas.attr('width', '16px').attr('height', '16px');
     canvas.setAttribute("width", "16px");
     canvas.setAttribute("height", "16px");
-    ctx = canvas.getContext("2d");
+
+    // if excanvas is set up, we need to initialize the new canvas element
+    if (typeof G_vmlCanvasManager !== 'undefined') {
+      G_vmlCanvasManager.initElement(canvas);
+    }
+
+    var ctx = canvas.getContext('2d');
 
     ctx.lineCap = "butt";
     ctx.drawImage(iconImg, 0, 0);
@@ -124,7 +135,8 @@ Drupal.environmentIndicator.affectFavicon = function (color) {
 
     // See: http://www.p01.org/releases/DEFENDER_of_the_favicon/
     try {
-      (newIcon = icon.cloneNode(true)).setAttribute("href", ctx.canvas.toDataURL());
+      var newIcon = icon.cloneNode(true);
+      newIcon.setAttribute("href", ctx.canvas.toDataURL());
       icon.parentNode.replaceChild(newIcon, icon);
     } catch (e) {
       // Nobody cares if a favicon goes untweaked
@@ -145,6 +157,20 @@ Drupal.environmentIndicator.splitColor = function (color) {
     parseInt(result[2], 16),
     parseInt(result[3], 16)
   ] : null;
+};
+
+/**
+ * Does the current browser support canvas?
+ * This is a variation of http://code.google.com/p/browser-canvas-support/
+ */
+Drupal.environmentIndicator.canvasSupport = function () {
+  var canvas_compatible = false;
+  try {
+    canvas_compatible = !!(document.createElement('canvas').getContext('2d')); // S60
+  } catch(e) {
+    canvas_compatible = !!(document.createElement('canvas').getContext); // IE
+  }
+  return canvas_compatible;
 };
 
 })(jQuery);
