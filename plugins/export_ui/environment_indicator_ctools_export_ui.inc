@@ -10,7 +10,7 @@ $plugin = array(
   // Define the menu item.
   'menu' => array(
     'menu prefix' => 'admin/config/development',
-    'menu item' => 'environment_indicator',
+    'menu item' => 'environment-indicator',
     'menu title' => 'Environment indicators',
     'menu description' => 'Administer environment indicators.',
   ),

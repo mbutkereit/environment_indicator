@@ -38,7 +38,7 @@ function environment_indicator_help($path, $arg) {
  */
 function environment_indicator_menu() {
   $items['admin/config/development/environment-indicator/settings'] = array(
-    'title' => 'Environment indicator',
+    'title' => 'Settings',
     'description' => 'Adjust settings for the Environment Indicator.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('environment_indicator_settings'),
@@ -113,9 +113,6 @@ function environment_indicator_ctools_plugin_directory($module, $type) {
  * System settings form
  */
 function environment_indicator_ctools_export_ui_form(&$form, &$form_state) {
-  drupal_add_library('system', 'farbtastic');
-  drupal_add_js(drupal_get_path('module', 'environment_indicator') .'/environment_indicator.js');
-
   $environment = $form_state['item'];
   $environment->color = '';
   $environment->weight = '';
@@ -154,11 +151,20 @@ function environment_indicator_ctools_export_ui_form(&$form, &$form_state) {
     '#description' => t('The hostname you want to detect. You can use a regular expression in this field. This regular expression will be run against the current URL to determine wether the environment is active or not. If you use a regular expression here this environment will <strong>not be availabe</strong> for environment switch.'),
     '#default_value' => $environment->regexurl,
   );
+  $form['color_picker'] = array(
+    '#markup' => '<div id="environment-indicator-color-picker"></div>',
+  );
   $form['color'] = array(
     '#type' => 'textfield',
     '#title' => t('Color'),
     '#description' => t('Color for the indicator. Ex: #D0D0D0.'),
     '#default_value' => $environment->color,
+    '#attached' => array(
+      // Add Farbtastic color picker.
+      'library' => array(
+        array('system', 'farbtastic'),
+      ),
+    ),
   );
   $form['weight'] = array(
     '#type' => 'textfield',
@@ -251,7 +257,7 @@ function environment_indicator_admin_menu_output_alter(&$content) {
       '#value' => theme('environment_indicator_indicator_name', $environment_info),
       '#weight' => 50,
       '#attributes' => array(
-        'id' => 'environment_indicator',
+        'id' => 'environment-indicator',
         'style' => 'background-color: ' . $environment_info['color'],
       ),
     );
@@ -278,8 +284,8 @@ function environment_indicator_get_active() {
   }
   if (variable_get('environment_indicator_overwrite', FALSE)) {
     $env = array(
-      'name' => 'overwritten_environment',
-      'machine' => variable_get('environment_indicator_overwritten_name', t('Loaded environment')),
+      'machine' => 'overwritten_environment',
+      'name' => variable_get('environment_indicator_overwritten_name', t('Loaded environment')),
       'weight' => -99,
       'color' => variable_get('environment_indicator_overwritten_color', '#777'),
       'position' => variable_get('environment_indicator_overwritten_position', 'top'),
@@ -332,7 +338,7 @@ function environment_indicator_get_all($fixed = FALSE) {
  */
 function environment_indicator_check_access() {
   // Do not show the indicator on select pages.
-  $off_pages = variable_get('environment_indicator_suppress_pages', "imagecrop/*\nmedia/browser");
+  $off_pages = variable_get('environment_indicator_suppress_pages', "");
   $path = drupal_get_path_alias($_GET['q']);
   // Compare with the internal and path alias (if any).
   $page_match = drupal_match_path($path, $off_pages);

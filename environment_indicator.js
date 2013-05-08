@@ -46,8 +46,8 @@
 
   Drupal.behaviors.environment_indicatorSwitcher = {
     attach: function (context, settings) {
-      $('#environment_indicator .environment-indicator-name, #toolbar .environment-indicator-name-wrapper', context).live('click', function () {
-        $('#environment_indicator .item-list, #toolbar .item-list', context).slideToggle('fast');
+      $('#environment-indicator .environment-indicator-name, #toolbar .environment-indicator-name-wrapper', context).live('click', function () {
+        $('#environment-indicator .item-list, #toolbar .item-list', context).slideToggle('fast');
       });
     }
   }
@@ -55,7 +55,9 @@
   Drupal.behaviors.environment_indicator_admin = {
     attach: function() {
       // Add the farbtastic tie-in
-      Drupal.settings.environment_indicator_color_picker = $.farbtastic('#environment-indicator-color-picker', '#edit-environment-indicator-color');
+      if ($.isFunction($.farbtastic)) {
+        Drupal.settings.environment_indicator_color_picker = $('#environment-indicator-color-picker').farbtastic('#ctools-export-ui-edit-item-form #edit-color');
+      };
     }
   }
 

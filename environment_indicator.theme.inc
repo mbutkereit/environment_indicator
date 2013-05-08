@@ -43,7 +43,7 @@ function theme_environment_indicator_indicator_bar($variables) {
         'position-' . $info['position'],
         'fixed-' . ($info['fixed'] ? 'yes' : 'no'),
       ),
-      'id' => 'environment_indicator',
+      'id' => 'environment-indicator',
       'style' => 'background-color: ' . $info['color'],
     ),
     'name' => array(

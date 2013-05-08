@@ -29,23 +29,25 @@ You can also override settings in settings.php, allowing you to have different
 settings for each of your environments. If you choose to detect your environment using settings.php, then all configuration variables can be
 overridden in settings.php, but the most common three are:
 
- - environment_indicator_overwrite
-     A boolean value indicating whether the Environment Indicator should use the settings.php variables for the indicator. On your production environment, you should probably set this to FALSE. e.g:
-     $conf['environment_indicator_overwrite'] = FALSE
- - environment_indicator_overwritten_name
-     The text that will be displayed on the indicator. e.g:
-     $conf['environment_indicator_overwritten_name'] = 'Staging'
- - environment_indicator_overwritten_color
-     A valid css color. e.g:
-     $conf['environment_indicator_overwritten_color'] = 'red'
- - environment_indicator_overwritten_position
-     Where your indicator may appear. Allowed values are "top" and "bottom".
-     e.g:
-     $conf['environment_indicator_overwritten_position'] = 'top'
- - environment_indicator_overwritten_fixed
-     A boolean value indicating whether the Environment Indicator should be
-     fixed at the top/bottom of the screen. e.g:
-     $conf['environment_indicator_overwritten_fixed'] = FALSE
+  - environment_indicator_overwrite
+      A boolean value indicating whether the Environment Indicator should use
+      the settings.php variables for the indicator. On your production
+      environment, you should probably set this to FALSE. e.g:
+      $conf['environment_indicator_overwrite'] = FALSE
+  - environment_indicator_overwritten_name
+      The text that will be displayed on the indicator. e.g:
+      $conf['environment_indicator_overwritten_name'] = 'Staging'
+  - environment_indicator_overwritten_color
+      A valid css color. e.g:
+      $conf['environment_indicator_overwritten_color'] = 'red'
+  - environment_indicator_overwritten_position
+      Where your indicator may appear. Allowed values are "top" and "bottom".
+      e.g:
+      $conf['environment_indicator_overwritten_position'] = 'top'
+  - environment_indicator_overwritten_fixed
+      A boolean value indicating whether the Environment Indicator should be
+      fixed at the top/bottom of the screen. e.g:
+      $conf['environment_indicator_overwritten_fixed'] = FALSE
 
 -- CONTACT --
 
