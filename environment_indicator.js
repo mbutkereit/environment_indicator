@@ -1,176 +1,63 @@
-/**
- * @file
- * Environment info JavaScript.
- *
- * @author Tom Kirkpatrick (mrfelton), www.systemseed.com
- *
- * affectFavicon() originally written by James Andres for WhatSite.js
- * (https://github.com/jamesandres/WhatSite)
- */
-
 (function ($) {
 
-Drupal.environmentIndicator = Drupal.environmentIndicator || {};
-
-/**
- * Core behavior for Environment Indicator.
- *
- * Test whether there is an environment indicator in the output and execute all
- * registered behaviors.
- */
-Drupal.behaviors.environmentIndicator = {
-  attach: function(context, settings) {
-
-    // Initialize settings.
-   settings.environment_indicator = $.extend({
-      text: ' ',
-      color: '#d00c0c',
-      suppress: false,
-      margin: false,
-      position: 'left'
-    }, settings.environment_indicator || {});
-
-    // Check whether environment indicator strip menu should be suppressed.
-    if (settings.environment_indicator.suppress) {
-      return;
+  Drupal.behaviors.environment_indicatorToolbar = {
+    attach: function (context, settings) {
+      if (typeof(Drupal.settings.environment_indicator) != 'undefined') {
+        var $name = $('<div>').addClass('environment-indicator-name-wrapper').html(Drupal.settings.environment_indicator['environment-indicator-name']);
+        $('#toolbar div.toolbar-menu', context).once('environment_indicator').append($name);
+        $('#toolbar div.toolbar-menu', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
+        $('#toolbar div.toolbar-menu .item-list', context).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.15, true));
+        $('#toolbar div.toolbar-menu .item-list ul li:not(.environment-indicator-switcher) a', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
+        $('#toolbar div.toolbar-drawer', context).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.25));
+        $('#toolbar div.toolbar-menu ul li a', context).hover(function () {
+          $(this).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.1));
+        }, function () {
+          $(this).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
+          $('#toolbar div.toolbar-menu ul li.active-trail a', context).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.1));
+        });
+        $('#toolbar div.toolbar-menu ul li.active-trail a', context).css('background-image', 'none').css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.1));
+        $('#toolbar div.toolbar-drawer ul li a', context).hover(function () {
+          $(this).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.1, true));
+        }, function () {
+          $(this).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.25));
+          $('#toolbar div.toolbar-drawer ul li.active-trail a', context).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.1, true));
+        });
+        $('#toolbar div.toolbar-drawer ul li.active-trail a', context).css('background-image', 'none').css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.1, true));
+        // Move switcher bar to the top
+        var $switcher = $('#toolbar .environment-switcher-container').parent().clone();
+        $('#toolbar .environment-switcher-container').parent().remove();
+        $('#toolbar').prepend($switcher);
+      };
     }
-
-    if ($('body:not(.environment-indicator-processed, .overlay)', context).length) {
-      settings.environment_indicator.cssClass = 'environment-indicator-' + settings.environment_indicator.position;
-
-      // If we don't have an environment indicator, inject it into the document.
-      var $environmentIndicator = $('#environment-indicator', context);
-      if (!$environmentIndicator.length) {
-        $('body', context).prepend('<div id="environment-indicator">' + settings.environment_indicator.text + '</div>');
-        $('body', context).addClass(settings.environment_indicator.cssClass);
-
-        // Set the colour.
-        $environmentIndicator = $('#environment-indicator', context);
-        $environmentIndicator.css('background-color', settings.environment_indicator.color);
-
-        // Make the text appear vertically
-        $environmentIndicator.html(settings.environment_indicator.text.replace(/(.)/g,"$1<br />"));
-
-        // Adjust the margin.
-        if (settings.environment_indicator.margin) {
-          $('body:not(.environment-indicator-adjust)', context).addClass('environment-indicator-adjust');
-
-          // Adjust the width of the toolbar
-          if ($("#toolbar").length) {
-            $("#toolbar").css('margin-'+settings.environment_indicator.position, '10px');
-          }
-        }
-      }
-
-      // Applies a coloured bar to the favicon
-      Drupal.environmentIndicator.affectFavicon(settings.environment_indicator.color);
-
-      $('body:not(.environment-indicator-processed)', context).addClass('environment-indicator-processed');
-    }
-  }
-};
-
-// Applies a coloured bar to the favicon
-Drupal.environmentIndicator.affectFavicon = function (color) {
-  if (!Drupal.environmentIndicator.canvasSupport()) {
-    return;
-  }
-
-  var i,
-      linkTags = document.getElementsByTagName("link"),
-      icon = null,
-      rel,
-      iconImg,
-      flatColor;
-
-  for (i = linkTags.length; i >= 0; i -= 1) {
-    if (typeof linkTags[i] !== "object") {
-      continue;
-    }
-    rel = linkTags[i].getAttribute("rel");
-    if (typeof rel === "undefined") {
-      continue;
-    }
-
-    if (rel === "shortcut icon" || rel === "icon") {
-      icon = linkTags[i];
-      break;
-    }
-  }
-
-  iconImg = new Image();
-  flatColor = Drupal.environmentIndicator.splitColor(color).join(",");
-
-  // See: https://developer.mozilla.org/en/Canvas_tutorial/Using_images
-  iconImg.onload = function () {
-    var canvas = document.createElement('canvas');
-
-    //canvas.attr('width', '16px').attr('height', '16px');
-    canvas.setAttribute("width", "16px");
-    canvas.setAttribute("height", "16px");
-
-    // if excanvas is set up, we need to initialize the new canvas element
-    if (typeof G_vmlCanvasManager !== 'undefined') {
-      G_vmlCanvasManager.initElement(canvas);
-    }
-
-    var ctx = canvas.getContext('2d');
-
-    ctx.lineCap = "butt";
-    ctx.drawImage(iconImg, 0, 0);
-
-    ctx.beginPath();
-      ctx.strokeStyle = "rgba(" + flatColor + ",1)";
-      ctx.lineWidth = 4;
-      ctx.moveTo(0, 0);
-      ctx.lineTo(canvas.width, 0);
-    ctx.stroke();
-
-    ctx.beginPath();
-      ctx.strokeStyle = "rgba(0,0,0,0.7)";
-      ctx.lineWidth = 1;
-      ctx.moveTo(0, 2.5);
-      ctx.lineTo(canvas.width, 2.5);
-    ctx.stroke();
-
-    // See: http://www.p01.org/releases/DEFENDER_of_the_favicon/
-    try {
-      var newIcon = icon.cloneNode(true);
-      newIcon.setAttribute("href", ctx.canvas.toDataURL());
-      icon.parentNode.replaceChild(newIcon, icon);
-    } catch (e) {
-      // Nobody cares if a favicon goes untweaked
+  };
+  
+  Drupal.behaviors.environment_indicatorAdminMenu = {
+    attach: function (context, settings) {
+      if (typeof(Drupal.admin) != 'undefined') {
+        // Add the restyling behavior to the admin menu behaviors.
+        Drupal.admin.behaviors['environment_indicator'] = function (context, settings) {
+          $('#admin-menu, #admin-menu-wrapper', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
+          $('#admin-menu .item-list', context).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.15, true));
+          $('#admin-menu .item-list ul li:not(.environment-switcher) a', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
+        };
+      };
     }
   };
 
-  iconImg.src = icon.href;
-
-  return this;
-};
-
-// See: http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-Drupal.environmentIndicator.splitColor = function (color) {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
-
-  return result ? [
-    parseInt(result[1], 16),
-    parseInt(result[2], 16),
-    parseInt(result[3], 16)
-  ] : null;
-};
-
-/**
- * Does the current browser support canvas?
- * This is a variation of http://code.google.com/p/browser-canvas-support/
- */
-Drupal.environmentIndicator.canvasSupport = function () {
-  var canvas_compatible = false;
-  try {
-    canvas_compatible = !!(document.createElement('canvas').getContext('2d')); // S60
-  } catch(e) {
-    canvas_compatible = !!(document.createElement('canvas').getContext); // IE
+  Drupal.behaviors.environment_indicatorSwitcher = {
+    attach: function (context, settings) {
+      $('#environment_indicator .environment-indicator-name, #toolbar .environment-indicator-name-wrapper', context).live('click', function () {
+        $('#environment_indicator .item-list, #toolbar .item-list', context).slideToggle('fast');
+      });
+    }
   }
-  return canvas_compatible;
-};
+
+  Drupal.behaviors.environment_indicator_admin = {
+    attach: function() {
+      // Add the farbtastic tie-in
+      Drupal.settings.environment_indicator_color_picker = $.farbtastic('#environment-indicator-color-picker', '#edit-environment-indicator-color');
+    }
+  }
+
 
 })(jQuery);

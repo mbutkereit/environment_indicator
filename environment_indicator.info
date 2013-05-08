@@ -1,15 +1,16 @@
-name = Environment Indicator
-description = Adds a coloured strip to the side of the site informing the user which environment they are in (Development, Staging Production etc).
-package = Development
+name = Environment indicator
+description = Adds a color indicator for the different environments.
 core = 7.x
-files[] = environment_indicator.module
-files[] = environment_indicator.install
 
-configure = admin/config/development/environment_indicator
+dependencies[] = ctools
 
-; Information added by drupal.org packaging script on 2012-12-30
-version = "7.x-1.1+9-dev"
+scripts[] = environment_indicator.js
+scripts[] = color.js
+
+stylesheets[all][] = environment_indicator.css
+; Information added by drupal.org packaging script on 2013-04-15
+version = "7.x-1.x-dev"
 core = "7.x"
 project = "environment_indicator"
-datestamp = "1356871962"
+datestamp = "1366030641"
 
