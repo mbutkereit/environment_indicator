@@ -8,9 +8,3 @@ scripts[] = environment_indicator.js
 scripts[] = color.js
 
 stylesheets[all][] = environment_indicator.css
-; Information added by drupal.org packaging script on 2013-04-15
-version = "7.x-1.x-dev"
-core = "7.x"
-project = "environment_indicator"
-datestamp = "1366030641"
-
