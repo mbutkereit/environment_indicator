@@ -26,4 +26,8 @@ $plugin = array(
     'settings' => 'environment_indicator_ctools_export_ui_form',
     'submit' => 'environment_indicator_ctools_export_ui_form_submit',
   ),
+  'handler' => array(
+    'class' => 'ctools_export_ui_environment_indicator',
+    'parent' => 'ctools_export_ui',
+  ),
 );

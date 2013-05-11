@@ -24,7 +24,7 @@ function environment_indicator_help($path, $arg) {
       $output .= '<dl>';
       $output .= '<dt><em>environment_indicator_overwrite</em></dt><dd>'. t('A boolean value indicating whether the Environment Indicator should use the settings.php variables for the indicator. On your production environment, you should probably set this to FALSE. e.g:<br/>$conf[\'environment_indicator_overwrite\'] = FALSE;') .'</dd></dt>';
       $output .= '<dt><em>environment_indicator_overwritten_name</em></dt><dd>'. t('The text that will be displayed on the indicator. e.g:<br/>$conf[\'environment_indicator_overwritten_name\'] = \'Staging\';') .'</dd></dt>';
-      $output .= '<dt><em>environment_indicator_overwritten_color</em></dt><dd>'. t('A valid css color. e.g:<br/>$conf[\'environment_indicator_overwritten_color\'] = \'red\';') .'</dd></dt>';
+      $output .= '<dt><em>environment_indicator_overwritten_color</em></dt><dd>'. t('A valid css color. e.g:<br/>$conf[\'environment_indicator_overwritten_color\'] = \'#F55\';') .'</dd></dt>';
       $output .= '<dt><em>environment_indicator_overwritten_position</em></dt><dd>'. t('Where your indicator may appear. Allowed values are "top" and "bottom". e.g:<br/>$conf[\'environment_indicator_overwritten_position\'] = \'top\';') .'</dd></dt>';
       $output .= '<dt><em>environment_indicator_overwritten_fixed</em></dt><dd>'. t('A boolean value indicating whether the Environment Indicator should be visible at all times, fixed at the top/bottom of the screen. e.g:<br/>$conf[\'environment_indicator_overwritten_fixed\'] = FALSE;') .'</dd></dt>';
       $output .= '</dl>';
@@ -240,6 +240,9 @@ function environment_indicator_theme($existing, $type, $theme, $path) {
     ),
     'environment_indicator_indicator_bar' => array(
       'variables' => array('info' => NULL),
+      'file' => 'environment_indicator.theme.inc',
+    ),
+    'environment_indicator_overriden_header' => array(
       'file' => 'environment_indicator.theme.inc',
     ),
   );
