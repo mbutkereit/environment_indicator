@@ -34,6 +34,26 @@ function environment_indicator_help($path, $arg) {
 }
 
 /**
+ * Implements hook_requirements().
+ */
+function environment_indicator_requirements($phase) {
+  $requirements = array();
+
+  // Report Drupal version
+  if ($phase == 'runtime') {
+    if (_environment_indicator_has_old_vars()) {
+      $requirements['environment_indicator'] = array(
+        'title' => t('Environment indicator'),
+        'value' => t('You are using old environment indicator variables. Please check the !help on how to upgrade your variables for the new release, and then remove the old ones.', array('!help' => l(t('help pages'), 'admin/help/environment_indicator'))),
+        'severity' => REQUIREMENT_ERROR
+      );
+    }
+  }
+
+  return $requirements;
+}
+
+/**
  * Implement hook_menu().
  */
 function environment_indicator_menu() {
@@ -70,6 +90,11 @@ function environment_indicator_permission() {
       'description' => t('See the evironment indicator if the user is in the %name environment.', array('%name' => $environment->name)),
     );
   }
+  // Manually add the overritten environment.
+  $permissons['access environment indicator overwritten_environment'] = array(
+    'title' => t('See environment indicator for the overritten environment'),
+    'description' => t('See the evironment indicator if the user is in the environment defined in settings.php.'),
+  );
   return $permissons;
 }
 
@@ -215,7 +240,7 @@ function environment_indicator_machine_available($machine) {
  */
 function environment_indicator_page_build(&$page) {
   if ($match = environment_indicator_get_active()) {
-    if (environment_indicator_check_access()) {    
+    if (environment_indicator_check_access($match)) {
       if (environment_indicator_needs_js()) {
         drupal_add_js(array('environment_indicator' => array(
           'toolbar-color' => $match['color'],
@@ -242,7 +267,7 @@ function environment_indicator_theme($existing, $type, $theme, $path) {
       'variables' => array('info' => NULL),
       'file' => 'environment_indicator.theme.inc',
     ),
-    'environment_indicator_overriden_header' => array(
+    'environment_indicator_overritten_header' => array(
       'file' => 'environment_indicator.theme.inc',
     ),
   );
@@ -285,15 +310,8 @@ function environment_indicator_get_active() {
   if (isset($env)) {
     return $env;
   }
-  if (variable_get('environment_indicator_overwrite', FALSE)) {
-    $env = array(
-      'machine' => 'overwritten_environment',
-      'name' => variable_get('environment_indicator_overwritten_name', t('Loaded environment')),
-      'weight' => -99,
-      'color' => variable_get('environment_indicator_overwritten_color', '#777'),
-      'position' => variable_get('environment_indicator_overwritten_position', 'top'),
-      'fixed' => variable_get('environment_indicator_overwritten_fixed', FALSE),
-    );
+  if (_environment_indicator_is_overritten()) {
+    $env = _environment_indicator_load_overritten();
   }
   else {
     $environments = environment_indicator_get_all();
@@ -336,10 +354,12 @@ function environment_indicator_get_all($fixed = FALSE) {
 /**
  * Helper function to check access to show the indicator.
  * 
+ * @param array
+ *   The environment info array.
  * @return boolean
  *   TRUE if the user can see the indicator.
  */
-function environment_indicator_check_access() {
+function environment_indicator_check_access($environment_info) {
   // Do not show the indicator on select pages.
   $off_pages = variable_get('environment_indicator_suppress_pages', "");
   $path = drupal_get_path_alias($_GET['q']);
@@ -351,7 +371,8 @@ function environment_indicator_check_access() {
   if ($page_match) {
     return FALSE;
   }
-  return user_access('access environment indicator') || user_access('access environment indicator ' . $match['machine']);
+  
+  return user_access('access environment indicator') || user_access('access environment indicator ' . $environment_info['machine']);
 }
 
 /**
@@ -376,4 +397,46 @@ function _environment_indicator_regex_filter($item) {
  */
 function _environment_indicator_active($item) {
   return empty($item->disabled) || !$item->disabled;
+}
+
+/**
+ * Helper function to load the overritten indicator.
+ * 
+ * @return array
+ *   Environment info array.
+ */
+function _environment_indicator_load_overritten() {
+  $env = &drupal_static(__FUNCTION__);
+  if (isset($env)) {
+    return $env;
+  }
+  $env = array(
+    'machine' => 'overwritten_environment',
+    'name' => variable_get('environment_indicator_overwritten_name', variable_get('environment_indicator_text', t('Default environment.'))),
+    'weight' => -99,
+    'color' => variable_get('environment_indicator_overwritten_color', variable_get('environment_indicator_color', '#F55')),
+    'position' => variable_get('environment_indicator_overwritten_position', 'top'),
+    'fixed' => variable_get('environment_indicator_overwritten_fixed', FALSE),
+  );
+  if (_environment_indicator_has_old_vars() && environment_indicator_check_access($env)) {
+    drupal_set_message(t('You have old configuration for the Evironment Indicator. Please check the !report for instruction on how to correct this.', array('!report' => l(t('status report'), 'admin/reports/status'))), 'warning');
+  }
+  return $env;
+}
+
+/**
+ * Helper function to determine if there is an overwritten indicator.
+ */
+function _environment_indicator_is_overritten() {
+  return variable_get('environment_indicator_enabled', FALSE) || variable_get('environment_indicator_overwrite', FALSE);
+}
+
+/**
+ * Helper function to determine if 7.x-1.x variables are present.
+ */
+function _environment_indicator_has_old_vars() {
+  $color = !is_null(variable_get('environment_indicator_color', NULL));
+  $enabled = !is_null(variable_get('environment_indicator_enabled', NULL));
+  $name = !is_null(variable_get('environment_indicator_text', NULL));
+  return $color || $enabled || $name;
 }

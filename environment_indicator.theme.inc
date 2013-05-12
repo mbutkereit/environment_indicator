@@ -61,11 +61,11 @@ function theme_environment_indicator_indicator_bar($variables) {
 /**
  * Theme function for the overriden environment indicator in the header of the list.
  */
-function theme_environment_indicator_overriden_header($variables) {
+function theme_environment_indicator_overritten_header($variables) {
   $header = '<div class="overriden-indicator"><h2 class="label">' . t('Overriden indicator.') . '</h2>';
   $header .= '<div class="description">' . t('This indicator is in your settings.php file and will take precedence over any other indicator that matches a hostname. To properly set an indicator in your settings.php file, please visit the !help.', array('!help' => l(t('help pages'), 'admin/help/environment_indicator'))) . '</div></div>';
   $table = '<p>' . t('There is no overriden environment indicator in you settings.php file. You only need one in case you want your indicator to be stored in your settings.php file instead of matching against the hostname. The environment switcher is not supported for overriden environments.') . '</p>';
-  if (!is_null(variable_get('environment_indicator_overwrite', NULL))) {
+  if (!is_null(variable_get('environment_indicator_overwrite', NULL)) || !is_null(variable_get('environment_indicator_enabled', FALSE))) {
     $headers = array(
       t('Enabled'),
       t('Name'),
@@ -73,12 +73,13 @@ function theme_environment_indicator_overriden_header($variables) {
       t('Position'),
       t('Fixed'),
     );
+    $env = _environment_indicator_load_overritten();
     $rows[] = array(
-      variable_get('environment_indicator_overwrite', FALSE) ? 'TRUE' : 'FALSE',
-      variable_get('environment_indicator_overwritten_name', ''),
-      variable_get('environment_indicator_overwritten_color', ''),
-      variable_get('environment_indicator_overwritten_position', ''),
-      variable_get('environment_indicator_overwritten_fixed', FALSE) ? 'TRUE' : 'FALSE',
+      _environment_indicator_is_overritten() ? 'TRUE' : 'FALSE',
+      $env['name'],
+      $env['color'],
+      $env['position'],
+      $env['fixed'] ? 'TRUE' : 'FALSE',
     );
     $table = theme('table', array('rows' => $rows, 'header' => $headers));
   }
