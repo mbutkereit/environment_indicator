@@ -16,11 +16,16 @@
 .fixed-yes.position-bottom { bottom: 0; }
 .fixed-yes.position-top { top: 0; }
 
+div#toolbar div.toolbar-menu { padding: 5px 20px 5px 10px; }
+
 #toolbar .toolbar-menu .environment-indicator-name, #environment-indicator .environment-indicator-name { cursor: pointer; }
 #environment-indicator .environment-indicator-name { padding: 5px; }
+#toolbar .toolbar-menu .environment-indicator-name { padding: 0px 12px; }
 #admin-menu #environment-indicator .environment-indicator-name { padding: 3px 12px; }
 
-#environment-indicator .gradient-bar, #environment-indicator .environment-indicator-name {
+#environment-indicator .gradient-bar,
+#environment-indicator .environment-indicator-name,
+#toolbar .environment-indicator-name-wrapper .environment-indicator-name {
   background-image: linear-gradient(bottom, rgba(207,207,207,0.3) 19%, rgba(250,250,250,0.3) 60%, rgba(255,255,255,0.3) 80%);
   background-image: -o-linear-gradient(bottom, rgba(207,207,207,0.3) 19%, rgba(250,250,250,0.3) 60%, rgba(255,255,255,0.3) 80%);
   background-image: -moz-linear-gradient(bottom, rgba(207,207,207,0.3) 19%, rgba(250,250,250,0.3) 60%, rgba(255,255,255,0.3) 80%);
@@ -37,8 +42,9 @@
   );
 }
 
-#toolbar .environment-indicator-name-wrapper { float: right; }
+#toolbar .environment-indicator-name-wrapper { float: right; font-size: 0.85em; }
 
+#toolbar .toolbar-menu .environment-indicator-name,
 #admin-menu #environment-indicator .environment-indicator-name {
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;

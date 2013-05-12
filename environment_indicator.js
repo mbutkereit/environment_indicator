@@ -4,7 +4,7 @@
     attach: function (context, settings) {
       if (typeof(Drupal.settings.environment_indicator) != 'undefined') {
         var $name = $('<div>').addClass('environment-indicator-name-wrapper').html(Drupal.settings.environment_indicator['environment-indicator-name']);
-        $('#toolbar div.toolbar-menu', context).once('environment_indicator').append($name);
+        $('#toolbar div.toolbar-menu', context).once('environment_indicator').prepend($name);
         $('#toolbar div.toolbar-menu', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
         $('#toolbar div.toolbar-menu .item-list', context).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.15, true));
         $('#toolbar div.toolbar-menu .item-list ul li:not(.environment-indicator-switcher) a', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
