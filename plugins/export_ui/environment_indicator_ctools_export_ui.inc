@@ -5,7 +5,7 @@
  */
 $plugin = array(
   'schema' => 'environment_indicator_environment',
-  'access' => 'administer environment_indicator settings',
+  'access' => 'administer environment indicator settings',
 
   // Define the menu item.
   'menu' => array(
