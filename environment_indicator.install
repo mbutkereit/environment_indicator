@@ -61,3 +61,13 @@ function environment_indicator_schema() {
   );
   return $schema;
 }
+
+/**
+ * Add table when updating from 1.x
+ */
+function environment_indicator_update_7200(&$sandbox) {
+  if (!db_table_exists('environment_indicator_environment')) {
+    $schema = environment_indicator_schema();
+    db_create_table('environment_indicator_environment', $schema['environment_indicator_environment']);
+  }
+}

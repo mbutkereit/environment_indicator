@@ -74,10 +74,14 @@ function theme_environment_indicator_overritten_header($variables) {
       t('Fixed'),
     );
     $env = _environment_indicator_load_overritten();
+    $color = $env['color'];
+    if (strpos($color, '#') !== 0) {
+      $color .= ' <span class="error">(' . t('Invalid color definition') . ')</span>';
+    }
     $rows[] = array(
       _environment_indicator_is_overritten() ? 'TRUE' : 'FALSE',
       $env['name'],
-      $env['color'],
+      $color,
       $env['position'],
       $env['fixed'] ? 'TRUE' : 'FALSE',
     );
