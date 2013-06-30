@@ -65,14 +65,32 @@ class EnvironmentIndicator extends ConfigEntityBase implements EnvironmentIndica
   public $weight = 0;
 
   /**
-   * Stores all settings of this environment indicator.
+   * Regeex to determine wether the environment is active or not.
    *
-   * An array containing Drupal\views\Plugin\views\display\DisplayPluginBase
-   * objects.
-   *
-   * @var array
+   * @var integer
    */
-  protected $settings;
+  public $regexurl = '';
+
+  /**
+   * The color of this environment indicator.
+   *
+   * @var integer
+   */
+  public $color = '#D0D0D0';
+
+  /**
+   * The position that this environment indicator should show on the screen.
+   *
+   * @var integer
+   */
+  public $position = '#D0D0D0';
+
+  /**
+   * Wether this environment indicator should used fixed positioning.
+   *
+   * @var integer
+   */
+  public $fixed = FALSE;
 
   /**
    * Returns whether the environment indicator's status is disabled or not.
@@ -144,7 +162,6 @@ class EnvironmentIndicator extends ConfigEntityBase implements EnvironmentIndica
     return $human_name;
   }
 
-
   /**
    * Overrides \Drupal\Core\Config\Entity\ConfigEntityBase::getExportProperties();
    */
@@ -155,6 +172,11 @@ class EnvironmentIndicator extends ConfigEntityBase implements EnvironmentIndica
       'description',
       'disabled',
       'uuid',
+      'regexurl',
+      'color',
+      'weight',
+      'position',
+      'fixed',
     );
     $properties = array();
     foreach ($names as $name) {

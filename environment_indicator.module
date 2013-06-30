@@ -110,13 +110,13 @@ function environment_indicator_permission() {
   foreach ($environments as $machine => $environment) {
     $permissons['access environment indicator ' . $environment->machine] = array(
       'title' => t('See environment indicator for %name', array('%name' => $environment->name)),
-      'description' => t('See the evironment indicator if the user is in the %name environment.', array('%name' => $environment->name)),
+      'description' => t('See the environment indicator if the user is in the %name environment.', array('%name' => $environment->name)),
     );
   }
   // Manually add the overritten environment.
   $permissons['access environment indicator overwritten_environment'] = array(
-    'title' => t('See environment indicator for the overritten environment'),
-    'description' => t('See the evironment indicator if the user is in the environment defined in settings.php.'),
+    'title' => t('See environment indicator for the overwritten environment'),
+    'description' => t('See the environment indicator if the user is in the environment defined in settings.php.'),
   );
   return $permissons;
 }
@@ -204,94 +204,6 @@ function environment_indicator_delete_multiple(array $names) {
 
 
 
-/**
- * System settings form
- */
-function environment_indicator_ctools_export_ui_form(&$form, &$form_state) {
-  $environment = $form_state['item'];
-  $environment->color = '';
-  $environment->weight = '';
-  $environment->position = 'top';
-  $environment->fixed = FALSE;
-  if (!empty($environment->settings)) {
-    $settings = $environment->settings;
-    $environment->color = $settings['color'];
-    $environment->weight = $settings['weight'];
-    $environment->position = $settings['position'];
-    $environment->fixed = $settings['fixed'];
-  }
-  unset($form['info']);
-  $form['name'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Name'),
-    '#description' => t('Name for this environment.'),
-    '#default_value' => $environment->name,
-    '#id' => 'name'
-  );
-  $form['machine'] = array(
-    '#title' => t('Machine name'),
-    '#type' => 'machine_name',
-    '#default_value' => $environment->machine,
-    '#maxlength' => 32,
-    '#required' => TRUE,
-    '#machine_name' => array(
-      'exists' => 'environment_indicator_machine_available',
-      'source' => array('name'),
-    ),
-    '#id' => 'machine-name',
-  );
-  $form['regexurl'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Hostname'),
-    '#description' => t('The hostname you want to detect. You can use a regular expression in this field. This regular expression will be run against the current URL to determine wether the environment is active or not. If you use a regular expression here this environment will <strong>not be availabe</strong> for environment switch.'),
-    '#default_value' => $environment->regexurl,
-  );
-  $form['color_picker'] = array(
-    '#markup' => '<div id="environment-indicator-color-picker"></div>',
-  );
-  $form['color'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Color'),
-    '#description' => t('Color for the indicator. Ex: #D0D0D0.'),
-    '#default_value' => $environment->color ?: '#D0D0D0',
-    '#attached' => array(
-      // Add Farbtastic color picker.
-      'library' => array(
-        array('system', 'farbtastic'),
-      ),
-    ),
-  );
-  $form['weight'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Weight'),
-    '#description' => t('Defines the order how the regular expressions are applied.'),
-    '#default_value' => $environment->weight,
-  );
-  $form['position'] = array(
-    '#title' => t('Position'),
-    '#descripyion' => t('Wether you want the indicator at the top or at the bottom.'),
-    '#type' => 'radios',
-    '#options' => array(
-      'top' => t('Top'),
-      'bottom' => t('Bottom'),
-    ),
-    '#default_value' => $environment->position,
-  );
-  $form['fixed'] = array(
-    '#title' => t('Fixed'),
-    '#descripyion' => t('Check this if you want the indicator to be positioned fixed.'),
-    '#type' => 'checkbox',
-    '#default_value' => $environment->fixed,
-  );
-  return $form;
-}
-
-/**
- * Helper function to check if the machine name is available.
- */
-function environment_indicator_machine_available($machine) {
-  return db_query("SELECT COUNT(*) FROM {environment_indicator_environment} WHERE machine = ':machine'", array(':machine' => $machine))->fetchField() > 0 && $machine != 'overwritten_environment';
-}
 
 /**
  * Implements hook_page_build().

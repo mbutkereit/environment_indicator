@@ -45,6 +45,49 @@ class EnvironmentIndicatorFormController extends EntityFormController {
       '#title' => t('Description'),
       '#default_value' => $environment->description,
     );
+    $form['regexurl'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Hostname'),
+      '#description' => t('The hostname you want to detect. You can use a regular expression in this field. This regular expression will be run against the current URL to determine wether the environment is active or not. If you use a regular expression here this environment will <strong>not be availabe</strong> for environment switch.'),
+      '#default_value' => $environment->regexurl,
+    );
+    $form['color_picker'] = array(
+      '#markup' => '<div id="environment-indicator-color-picker"></div>',
+    );
+    $form['color'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Color'),
+      '#description' => t('Color for the indicator. Ex: #D0D0D0.'),
+      '#default_value' => $environment->color ?: '#D0D0D0',
+      '#attached' => array(
+        // Add Farbtastic color picker.
+        'library' => array(
+          array('system', 'farbtastic'),
+        ),
+      ),
+    );
+    $form['weight'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Weight'),
+      '#description' => t('Defines the order how the regular expressions are applied.'),
+      '#default_value' => $environment->weight,
+    );
+    $form['position'] = array(
+      '#title' => t('Position'),
+      '#description' => t('Wether you want the indicator at the top or at the bottom.'),
+      '#type' => 'radios',
+      '#options' => array(
+        'top' => t('Top'),
+        'bottom' => t('Bottom'),
+      ),
+      '#default_value' => $environment->position,
+    );
+    $form['fixed'] = array(
+      '#title' => t('Fixed'),
+      '#description' => t('Check this if you want the indicator to be positioned fixed.'),
+      '#type' => 'checkbox',
+      '#default_value' => $environment->fixed,
+    );
 
     return parent::form($form, $form_state, $environment);
   }
