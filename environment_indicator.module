@@ -2,11 +2,14 @@
 
 /**
  * @file
- * Module implementation file.
+ * Enables the definition and management of environment indicators.
  */
 
+use Drupal\environment_indicator\Plugin\Core\Entity\EnvironmentIndicator;
+use Drupal\Core\Entity\EntityInterface;
+
 /**
- * Implement hook_help().
+ * Implements hook_help().
  */
 function environment_indicator_help($path, $arg) {
   switch ($path) {
@@ -34,26 +37,6 @@ function environment_indicator_help($path, $arg) {
 }
 
 /**
- * Implements hook_requirements().
- */
-function environment_indicator_requirements($phase) {
-  $requirements = array();
-
-  // Report Drupal version
-  if ($phase == 'runtime') {
-    if (_environment_indicator_has_old_vars()) {
-      $requirements['environment_indicator'] = array(
-        'title' => t('Environment indicator'),
-        'value' => t('You are using old environment indicator variables. Please check the !help on how to upgrade your variables for the new release, and then remove the old ones.', array('!help' => l(t('help pages'), 'admin/help/environment_indicator'))),
-        'severity' => REQUIREMENT_ERROR
-      );
-    }
-  }
-
-  return $requirements;
-}
-
-/**
  * Implement hook_menu().
  */
 function environment_indicator_menu() {
@@ -65,6 +48,46 @@ function environment_indicator_menu() {
     'access arguments' => array('administer environment indicator settings'),
     'type' => MENU_LOCAL_TASK,
     'file' =>'environment_indicator.admin.inc',
+  );
+  $items['admin/config/development/environment-indicator'] = array(
+    'title' => 'Environment Indicator',
+    'description' => 'Manage and configure your Environment Indicators.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('environment_indicator_list_page'),
+    'access arguments' => array('administer environment indicator settings'),
+    'file' => 'environment_indicator.admin.inc',
+  );
+  $items['admin/config/development/environment-indicator/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  $items['admin/config/development/environment-indicator/add'] = array(
+    'title' => 'Add Environment',
+    'page callback' => 'environment_indicator_add_page',
+    'access arguments' => array('administer environment indicator settings'),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'environment_indicator.admin.inc',
+  );
+  $items['admin/config/development/environment-indicator/manage/%environment_indicator'] = array(
+    'title' => 'Edit environment indicator',
+    'page callback' => 'environment_indicator_edit_page',
+    'page arguments' => array(5),
+    'access arguments' => array('administer environment indicator settings'),
+    'file' => 'environment_indicator.admin.inc',
+  );
+  $items['admin/config/development/environment-indicator/manage/%environment_indicator/edit'] = array(
+    'title' => 'Edit',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  $items['admin/config/development/environment-indicator/manage/%environment_indicator/delete'] = array(
+    'title' => 'Delete',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('environment_indicator_delete_form', 5),
+    'access arguments' => array('administer environment indicator settings'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'environment_indicator.admin.inc',
   );
   return $items;
 }
@@ -99,40 +122,87 @@ function environment_indicator_permission() {
 }
 
 /**
- * Implements hook_ctools_plugin_api().
+ * Loads multiple environment indicators based on certain conditions.
+ *
+ * This function should be used whenever you need to load more than one
+ * environment from the database. Environments are loaded into memory and will
+ * not require database access if loaded again during the same page request.
+ *
+ * @see entity_load_multiple()
+ *
+ * @param array $names
+ *   (optional) An array of entity IDs. If omitted, all entities are loaded.
+ *
+ * @return array
+ *  An array of environment objects, indexed by name.
  */
-function environment_indicator_ctools_plugin_api($owner, $api) {
-  if ($owner == 'environment_indicator' && $api == 'default_environment_indicator_environments') {
-    return array('version' => 1);
-  }
+function environment_indicator_load_multiple(array $names = NULL) {
+  return entity_load_multiple('environment_indicator', $names);
 }
 
 /**
- * Implementation of hook_default_environment_indicator_environment().
+ * Sorts environment indicators by their weight and label.
+ *
+ * @param array $environments
+ *   An array of \Drupal\environment_indicator\Plugin\Core\Entity\Environment objects.
  */
-function environment_indicator_default_environment_indicator_environment() {
-  $export = array();
-
-  $environment = new stdClass;
-  $environment->api_version = 1;
-  $environment->machine = 'default_environment';
-  $environment->name = t('Default environment');
-  $environment->regexurl = '.*';
-  $environment->settings = array('color' => '#A33', 'weight' => 99, 'position' => 'top', 'fixed' => FALSE);
-  $export['default_environment'] = $environment;
-
-  return $export;
+function environment_indicator_sort(array &$environments = array()) {
+  @uasort($environments, 'Drupal\Core\Config\Entity\ConfigEntityBase::sort');
 }
 
 /**
- * Implementation of hook_ctools_plugin_directory().
+ * Return the environment indicator entity matching an environment ID.
+ *
+ * @param int $name
+ *   The environment indicators's ID.
+ *
+ * @return Drupal\environment_indicator\Plugin\Core\Entity\Environment|false
+ *   The environment indicator entity, if exists, FALSE otherwise. Results are
+ *   statically cached.
  */
-function environment_indicator_ctools_plugin_directory($module, $type) {
-  // Load the export_ui plugin.
-  if ($type =='export_ui') {
-    return 'plugins/export_ui';
-  }
+function environment_indicator_load($name) {
+  return entity_load('environment_indicator', $name);
 }
+
+/**
+ * Saves an environment indicator.
+ *
+ * @param Drupal\environment_indicator\Plugin\Core\Entity\EnvironmentIndicator $environment_indicator
+ *   The environment indicator entity to be saved.
+ */
+function environment_indicator_save(Vocabulary $environment) {
+  return $environment->save();
+}
+
+/**
+ * Deletes an environment indicator.
+ *
+ * @param $name
+ *   An environment indicator name.
+ *
+ */
+function environment_indicator_delete($name) {
+  environment_indicator_delete_multiple(array($name));
+}
+
+/**
+ * Deletes environment indicators.
+ *
+ * @param $names
+ *   The environment indicator names.
+ */
+function environment_indicator_delete_multiple(array $names) {
+  entity_delete_multiple('environment_indicator', $names);
+}
+
+
+
+
+/**
+ * TO SORT
+ * -------------------------------------------------------------------------*/
+
+
 
 /**
  * System settings form
@@ -214,18 +284,6 @@ function environment_indicator_ctools_export_ui_form(&$form, &$form_state) {
     '#default_value' => $environment->fixed,
   );
   return $form;
-}
-
-/**
- * Submit callback for environment_indicator_ctools_export_ui_form
- */
-function environment_indicator_ctools_export_ui_form_submit(&$form, &$form_state) {
-  $form_state['item']->settings = array(
-    'color' => $form_state['values']['color'],
-    'weight' => $form_state['values']['weight'],
-    'position' => $form_state['values']['position'],
-    'fixed' => $form_state['values']['fixed'],
-  );
 }
 
 /**

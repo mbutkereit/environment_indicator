@@ -1,12 +1,10 @@
 name = Environment indicator
 description = Adds a color indicator for the different environments.
-core = 7.x
-
-dependencies[] = ctools
+package = Developer
+version = VERSION
+core = 8.x
 
 scripts[] = environment_indicator.js
 scripts[] = color.js
-
-files[] = plugins/ctools_export_ui_environment_indicator.class.php
 
 stylesheets[all][] = environment_indicator.css
