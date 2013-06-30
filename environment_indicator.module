@@ -40,15 +40,6 @@ function environment_indicator_help($path, $arg) {
  * Implement hook_menu().
  */
 function environment_indicator_menu() {
-  $items['admin/config/development/environment-indicator/settings'] = array(
-    'title' => 'Settings',
-    'description' => 'Adjust settings for the Environment Indicator.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('environment_indicator_settings'),
-    'access arguments' => array('administer environment indicator settings'),
-    'type' => MENU_LOCAL_TASK,
-    'file' =>'environment_indicator.admin.inc',
-  );
   $items['admin/config/development/environment-indicator'] = array(
     'title' => 'Environment Indicator',
     'description' => 'Manage and configure your Environment Indicators.',
@@ -88,6 +79,15 @@ function environment_indicator_menu() {
     'access arguments' => array('administer environment indicator settings'),
     'type' => MENU_LOCAL_TASK,
     'file' => 'environment_indicator.admin.inc',
+  );
+  $items['admin/config/development/environment-indicator/settings'] = array(
+    'title' => 'Settings',
+    'description' => 'Adjust settings for the Environment Indicator.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('environment_indicator_settings'),
+    'access arguments' => array('administer environment indicator settings'),
+    'type' => MENU_LOCAL_TASK,
+    'file' =>'environment_indicator.admin.inc',
   );
   return $items;
 }
