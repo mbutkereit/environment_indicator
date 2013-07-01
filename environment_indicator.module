@@ -7,6 +7,7 @@
 
 use Drupal\environment_indicator\Plugin\Core\Entity\EnvironmentIndicator;
 use Drupal\Core\Entity\EntityInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Implements hook_help().
@@ -40,55 +41,75 @@ function environment_indicator_help($path, $arg) {
  * Implement hook_menu().
  */
 function environment_indicator_menu() {
+  $items = array();
+
+  // Minor code reduction technique.
+  $base = array(
+    'access callback' => 'user_access',
+    'access arguments' => array('administer environment indicator settings'),
+    'file' => 'environment_indicator.admin.inc',
+  );
+  // Set up the base for AJAX callbacks.
+  $ajax_base = array(
+    'page callback' => 'environment_indicator_ajax_callback',
+    'page arguments' => array(5, 6),
+    'type' => MENU_CALLBACK,
+  ) + $base;
+
   $items['admin/config/development/environment-indicator'] = array(
     'title' => 'Environment Indicator',
     'description' => 'Manage and configure your Environment Indicators.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('environment_indicator_list_page'),
-    'access arguments' => array('administer environment indicator settings'),
-    'file' => 'environment_indicator.admin.inc',
-  );
+  ) + $base;
+
   $items['admin/config/development/environment-indicator/list'] = array(
     'title' => 'List',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
-  );
+  ) + $base;
+
   $items['admin/config/development/environment-indicator/add'] = array(
     'title' => 'Add Environment',
     'page callback' => 'environment_indicator_add_page',
-    'access arguments' => array('administer environment indicator settings'),
     'type' => MENU_LOCAL_ACTION,
-    'file' => 'environment_indicator.admin.inc',
-  );
+  ) + $base;
+
   $items['admin/config/development/environment-indicator/manage/%environment_indicator'] = array(
     'title' => 'Edit environment indicator',
     'page callback' => 'environment_indicator_edit_page',
     'page arguments' => array(5),
-    'access arguments' => array('administer environment indicator settings'),
-    'file' => 'environment_indicator.admin.inc',
-  );
+  ) + $base;
+
   $items['admin/config/development/environment-indicator/manage/%environment_indicator/edit'] = array(
     'title' => 'Edit',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
-  );
+  ) + $base;
+
   $items['admin/config/development/environment-indicator/manage/%environment_indicator/delete'] = array(
     'title' => 'Delete',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('environment_indicator_delete_form', 5),
-    'access arguments' => array('administer environment indicator settings'),
     'type' => MENU_LOCAL_TASK,
-    'file' => 'environment_indicator.admin.inc',
-  );
+  ) + $base;
+
+  $items['admin/config/development/environment-indicator/manage/%environment_indicator/enable'] = array(
+    'title' => 'Enable an environment indicator',
+  ) + $ajax_base;
+
+  $items['admin/config/development/environment-indicator/manage/%environment_indicator/disable'] = array(
+    'title' => 'Disable a environment indicator',
+  ) + $ajax_base;
+  
   $items['admin/config/development/environment-indicator/settings'] = array(
     'title' => 'Settings',
     'description' => 'Adjust settings for the Environment Indicator.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('environment_indicator_settings'),
-    'access arguments' => array('administer environment indicator settings'),
     'type' => MENU_LOCAL_TASK,
-    'file' =>'environment_indicator.admin.inc',
-  );
+  ) + $base;
+
   return $items;
 }
 
@@ -119,6 +140,35 @@ function environment_indicator_permission() {
     'description' => t('See the environment indicator if the user is in the environment defined in settings.php.'),
   );
   return $permissons;
+}
+
+/**
+ * Page callback: Calls a method on an environment indicator and reloads the listing page.
+ *
+ * @param Drupal\environment_indicator\EnvironmentIndicator $environment
+ *   The config entity being acted upon.
+ * @param string $op
+ *   The operation to perform, e.g., 'enable' or 'disable'.
+ *
+ * @return mixed
+ *   Either returns the listing page as JSON, or calls drupal_goto() to
+ *   redirect back to the listing page.
+ */
+function environment_indicator_ajax_callback(EnvironmentIndicator $environment, $op) {
+  // Perform the operation.
+  $environment->$op();
+
+  // If the request is via AJAX, return the rendered list as JSON.
+  if (drupal_container()->get('request')->request->get('js')) {
+    $list = entity_list_controller('environment_indicator')->render();
+    $commands = array(ajax_command_replace('#environment-indicator-entity-list', drupal_render($list)));
+    return new JsonResponse(ajax_render($commands));
+  }
+  // Otherwise, redirect back to the page.
+  else {
+    $entity_info = entity_get_info('environment_indicator');
+    drupal_goto('admin/config/development/environment-indicator');
+  }
 }
 
 /**
@@ -170,7 +220,7 @@ function environment_indicator_load($name) {
  * @param Drupal\environment_indicator\Plugin\Core\Entity\EnvironmentIndicator $environment_indicator
  *   The environment indicator entity to be saved.
  */
-function environment_indicator_save(Vocabulary $environment) {
+function environment_indicator_save(EnvironmentIndicator $environment) {
   return $environment->save();
 }
 
@@ -196,15 +246,6 @@ function environment_indicator_delete_multiple(array $names) {
 }
 
 
-
-
-/**
- * TO SORT
- * -------------------------------------------------------------------------*/
-
-
-
-
 /**
  * Implements hook_page_build().
  */
@@ -223,6 +264,12 @@ function environment_indicator_page_build(&$page) {
     }
   }
 }
+
+/**
+ * TO SORT
+ * -------------------------------------------------------------------------*/
+
+
 
 /**
  * Implements hook_theme().

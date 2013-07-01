@@ -11,8 +11,7 @@ use Drupal\environment_indicator\Plugin\Core\Entity\EnvironmentIndicator;
  * Page callback; Lists available EnvironmentIndicator objects.
  */
 function environment_indicator_list_page() {
-  $controller = entity_list_controller('environment_indicator');
-  return $controller->render();
+  return entity_list_controller('environment_indicator')->render();
 }
 
 /**
