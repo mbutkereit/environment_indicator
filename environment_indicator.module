@@ -331,19 +331,18 @@ function environment_indicator_get_active() {
     $env = _environment_indicator_load_overritten();
   }
   else {
-    $environments = environment_indicator_get_all();
+    $environments = entity_list_controller('environment_indicator')->load();
     $matches = array();
-    foreach ($environments as $machine => $environment) {
+    foreach ($environments['enabled'] as $machine => $environment) {
       // Check if the environment record has ben disabled. Then check the regex.
-      if (preg_match("/$environment->regexurl/", $_SERVER['HTTP_HOST'])) {
-        $settings = $environment->settings;
+      if (preg_match("/" . $environment->get('regexurl') . "/", $_SERVER['HTTP_HOST'])) {
         $matches[] = array(
-          'name' => $environment->name,
-          'machine' => $environment->machine,
-          'weight' => $settings['weight'],
-          'color' => $settings['color'],
-          'position' => $settings['position'],
-          'fixed' => $settings['fixed'],
+          'name' => $environment->get('human_name'),
+          'machine' => $environment->id(),
+          'weight' => $environment->get('weight'),
+          'color' => $environment->get('color'),
+          'position' => $environment->get('position'),
+          'fixed' => $environment->get('fixed'),
         );
       }
     }
@@ -379,16 +378,18 @@ function environment_indicator_get_all($fixed = FALSE) {
 function environment_indicator_check_access($environment_info) {
   // Do not show the indicator on select pages.
   $off_pages = variable_get('environment_indicator_suppress_pages', "");
-  $path = drupal_get_path_alias($_GET['q']);
+  $path = current_path();
+  $path_alias = drupal_container()->get('path.alias_manager.cached')->getPathAlias($path);
+
   // Compare with the internal and path alias (if any).
-  $page_match = drupal_match_path($path, $off_pages);
-  if ($path != $_GET['q']) {
-    $page_match = $page_match || drupal_match_path($_GET['q'], $off_pages);
+  $page_match = drupal_match_path($path_alias, $off_pages);
+  if ($path_alias != current_path()) {
+    $page_match = $page_match || drupal_match_path(current_path(), $off_pages);
   }
   if ($page_match) {
     return FALSE;
   }
-  
+
   return user_access('access environment indicator') || user_access('access environment indicator ' . $environment_info['machine']);
 }
 
@@ -423,6 +424,7 @@ function _environment_indicator_active($item) {
  *   Environment info array.
  */
 function _environment_indicator_load_overritten() {
+  // TODO: Need to be updated
   $env = &drupal_static(__FUNCTION__);
   if (isset($env)) {
     return $env;
