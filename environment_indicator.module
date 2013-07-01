@@ -255,7 +255,7 @@ function environment_indicator_page_build(&$page) {
       if (environment_indicator_needs_js()) {
         drupal_add_js(array('environment_indicator' => array(
           'toolbar-color' => $match['color'],
-          'environment-indicator-name' => theme('environment_indicator_indicator_name', $match),
+          'environment-indicator-name' => $match['name'],
         )), 'setting');
       }
       else if (!(module_exists('admin_menu') && user_access('access administration menu'))) {
@@ -263,6 +263,49 @@ function environment_indicator_page_build(&$page) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_toolbar().
+ */
+function environment_indicator_toolbar() {
+  $items['environment_indicator'] = array(
+    'tab' => array(
+      'title' => t('Environment'),
+      'href' => '',
+      'html' => FALSE,
+      'attributes' => array(
+        'title' => t('Environment'),
+      ),
+    ),
+    'tray' => array(
+      '#heading' => t('Available environments'),
+      'content' => array(
+        '#theme' => 'item_list',
+        '#items' => environment_indicator_get_environments_list(),
+      ),
+    ),
+    'weight' => 200,
+    'access' => user_access('access environment indicator'),
+  );
+
+  return $items;
+}
+
+
+function environment_indicator_get_environments_list() {
+  $items = array();
+  $environments = entity_list_controller('environment_indicator')->load();
+  $destination = drupal_get_destination();
+  foreach ($environments['enabled'] as $machine => $environment) {
+    $items[] = array(
+      '#markup' => l(t('Open in %name', array('%name' => t($environment->get('human_name')))), 'http://' . $environment->get('regexurl') . '/' . $destination['destination'], array('html' => TRUE)),
+      '#wrapper_attributes' => array(
+        'class' => array('environment-switcher')
+      ),
+    );
+  }
+  return $items;
 }
 
 /**
@@ -287,10 +330,10 @@ function environment_indicator_theme($existing, $type, $theme, $path) {
 /**
  * Helper function to attach the indicator to the page.
  */
-function environment_indicator_attach_indicator($environment_info, &$page) {
-  $page['page_' . $environment_info['position']]['environment_indicator'] = array(
+function environment_indicator_attach_indicator($environment, &$page) {
+  $page['page_' . $environment['position']]['environment_indicator'] = array(
     '#theme' => 'environment_indicator_indicator_bar',
-    '#info' => $environment_info,
+    '#info' => $environment,
   );
 }
 
@@ -336,7 +379,7 @@ function environment_indicator_get_active() {
  * @return boolean
  *   TRUE if the user can see the indicator.
  */
-function environment_indicator_check_access($environment_info) {
+function environment_indicator_check_access($environment) {
   // Do not show the indicator on select pages.
   $off_pages = variable_get('environment_indicator_suppress_pages', "");
   $path = current_path();
@@ -351,7 +394,7 @@ function environment_indicator_check_access($environment_info) {
     return FALSE;
   }
 
-  return user_access('access environment indicator') || user_access('access environment indicator ' . $environment_info['machine']);
+  return user_access('access environment indicator') || user_access('access environment indicator ' . $environment['machine']);
 }
 
 /**
@@ -361,25 +404,11 @@ function environment_indicator_check_access($environment_info) {
  *   TRUE if the extra javascript is needed.
  */
 function environment_indicator_needs_js() {
-  return (module_exists('toolbar') && user_access('access toolbar')) || (module_exists('admin_menu') && user_access('access administration menu'));
+  return module_exists('toolbar') && user_access('access toolbar');
 }
 
 /**
- * Filter callback
- */
-function _environment_indicator_regex_filter($item) {
-  return !preg_match("/[\*\?\[\]\(\)]/", $item->regexurl);
-}
-
-/**
- * Filter callback
- */
-function _environment_indicator_active($item) {
-  return empty($item->disabled) || !$item->disabled;
-}
-
-/**
- * Helper function to load the overritten indicator.
+ * Helper function to load the overwritten indicator.
  * 
  * @return array
  *   Environment info array.
