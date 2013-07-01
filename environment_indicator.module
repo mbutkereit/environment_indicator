@@ -127,7 +127,7 @@ function environment_indicator_permission() {
       'description' => t('See all the environment indicators in the site.'),
     ),
   );
-  $environments = environment_indicator_get_all();
+  $environments = entity_list_controller('environment_indicator');
   foreach ($environments as $machine => $environment) {
     $permissons['access environment indicator ' . $environment->machine] = array(
       'title' => t('See environment indicator for %name', array('%name' => $environment->name)),
@@ -266,12 +266,6 @@ function environment_indicator_page_build(&$page) {
 }
 
 /**
- * TO SORT
- * -------------------------------------------------------------------------*/
-
-
-
-/**
  * Implements hook_theme().
  */
 function environment_indicator_theme($existing, $type, $theme, $path) {
@@ -288,25 +282,6 @@ function environment_indicator_theme($existing, $type, $theme, $path) {
       'file' => 'environment_indicator.theme.inc',
     ),
   );
-}
-
-/**
- * Implements hook_admin_menu_output_alter().
- */
-function environment_indicator_admin_menu_output_alter(&$content) {
-  $environment_info = environment_indicator_get_active();
-  if (!empty($environment_info)) {
-    $content['environment_indicator'] = array(
-      '#theme' => 'html_tag',
-      '#tag' => 'div',
-      '#value' => theme('environment_indicator_indicator_name', $environment_info),
-      '#weight' => 50,
-      '#attributes' => array(
-        'id' => 'environment-indicator',
-        'style' => 'background-color: ' . $environment_info['color'],
-      ),
-    );
-  }
 }
 
 /**
@@ -332,6 +307,7 @@ function environment_indicator_get_active() {
   }
   else {
     $environments = entity_list_controller('environment_indicator')->load();
+
     $matches = array();
     foreach ($environments['enabled'] as $machine => $environment) {
       // Check if the environment record has ben disabled. Then check the regex.
@@ -350,21 +326,6 @@ function environment_indicator_get_active() {
     $env = reset($matches);
   }
   return $env;
-}
-
-/**
- * Helper function to get all environments.
- * 
- * @param bool $fixed
- *   If TRUE it will only return fixed environments. Fixed environments are
- *   those that do not use a regular expression for detection.
- */
-function environment_indicator_get_all($fixed = FALSE) {
-  module_load_include('inc', 'ctools', 'includes/export');
-  $environments = ctools_export_crud_load_all('environment_indicator_environment');
-  $environments = array_filter($environments, '_environment_indicator_active');
-  // Check if the regular expression is a environment name.
-  return $fixed ? array_filter($environments, '_environment_indicator_regex_filter') : $environments;
 }
 
 /**

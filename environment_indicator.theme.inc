@@ -10,23 +10,23 @@
  */
 function theme_environment_indicator_indicator_name($variables) {
   $output = '<div class="environment-indicator-name">' . t($variables['name']) . '</div>';
-  $environments = environment_indicator_get_all(TRUE);
-  if (!empty($environments)) {
-    $destination = drupal_get_destination();
-    foreach ($environments as $environment) {
-      $items[] = array(
-        'data' => l(t('Open in %name', array('%name' => t($environment->name))), 'http://' . $environment->regexurl . '/' . $destination['destination'], array('html' => TRUE)),
-        'class' => array('environment-switcher'),
-      );
-    }
-    $switcher = theme('item_list', array(
-      'items' => $items,
-      'attributes' => array(
-        'class' => array('environment-switcher-container'),
+  $environments = entity_list_controller('environment_indicator')->load();
+  $destination = drupal_get_destination();
+  foreach ($environments['enabled'] as $machine => $environment) {
+    $items[] = array(
+      '#markup' => l(t('Open in %name', array('%name' => t($environment->get('human_name')))), 'http://' . $environment->get('regexurl') . '/' . $destination['destination'], array('html' => TRUE)),
+      '#wrapper_attributes' => array(
+        'class' => array('environment-switcher')
       ),
-    ));
-    $output .= $switcher;
+    );
   }
+  $switcher = theme('item_list', array(
+    'items' => $items,
+    'attributes' => array(
+      'class' => array('environment-switcher-container'),
+    ),
+  ));
+  $output .= $switcher;
   return $output;
 }
 
@@ -59,7 +59,7 @@ function theme_environment_indicator_indicator_bar($variables) {
 }
 
 /**
- * Theme function for the overriden environment indicator in the header of the list.
+ * Theme function for the overridden environment indicator in the header of the list.
  */
 function theme_environment_indicator_overritten_header($variables) {
   $header = '<div class="overriden-indicator"><h2 class="label">' . t('Overriden indicator.') . '</h2>';
