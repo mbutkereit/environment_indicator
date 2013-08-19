@@ -5,10 +5,9 @@
 Drupal.behaviors.environmentIndicatorToolbar = {
   attach: function (context, settings) {
     if (typeof(Drupal.settings.environment_indicator) != 'undefined') {
-      var $name = $('<div>').addClass('environment-indicator-name-wrapper').html(Drupal.settings.environment_indicator['environment-indicator-name']);
-      $('#toolbar-administration', context).once('environment_indicator').prepend($name);
-      $('#toolbar-administration', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
-      $('#toolbar-administration .bar', context).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.15, true));
+      // $('#toolbar-administration', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
+      $('#toolbar-administration .toolbar-bar', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
+      $('#toolbar-administration .toolbar-lining', context).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.15, false));
     };
   }
 };

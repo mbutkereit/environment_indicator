@@ -9,32 +9,36 @@
  * Theme function for the indicator name.
  */
 function theme_environment_indicator_indicator_name($variables) {
-  dpm($variables);
   $output = '<div class="environment-indicator-name">' . t($variables['name']) . '</div>';
   $environments = environment_indicator_get_all(TRUE);
+  $active_environment = environment_indicator_get_active();
   $destination = drupal_get_destination();
   foreach ($environments as $machine => $environment) {
-    $items[] = array(
-      'link' => array(
-        '#type' => 'link',
-        '#title' => t('Open in %name', array('%name' => t($environment->get('name')))),
-        '#href' => 'http://' . $environment->get('regexurl') . '/' . $destination['destination'],
-        '#options' => array(
-          'html' => TRUE,
+    if ($machine != $active_environment['machine']) {
+      $items[] = array(
+        'link' => array(
+          '#type' => 'link',
+          '#title' => t('Open in %name', array('%name' => t($environment->get('name')))),
+          '#href' => 'http://' . $environment->get('regexurl') . '/' . $destination['destination'],
+          '#options' => array(
+            'html' => TRUE,
+          ),
         ),
-      ),
-      '#wrapper_attributes' => array(
-        'class' => array('environment-switcher')
-      ),
-    );
+        '#wrapper_attributes' => array(
+          'class' => array('environment-switcher')
+        ),
+      );
+    }
   }
-  $switcher = theme('item_list', array(
-    'items' => $items,
-    'attributes' => array(
-      'class' => array('environment-switcher-container'),
-    ),
-  ));
-  $output .= $switcher;
+  if (!empty($items)) {
+    $switcher = theme('item_list', array(
+      'items' => $items,
+      'attributes' => array(
+        'class' => array('environment-switcher-container'),
+      ),
+    ));
+    $output .= $switcher;
+  }
   return $output;
 }
 

@@ -344,6 +344,38 @@ function environment_indicator_admin_menu_output_alter(&$content) {
 }
 
 /**
+ * Implements hook_toolbar().
+ */
+function environment_indicator_toolbar() {
+  $environment = environment_indicator_get_active();
+  $items['environment_indicator'] = array(
+    // Include the toolbar_tab_wrapper to style the link like a toolbar tab.
+    // Exclude the theme wrapper if custom styling is desired.
+    '#type' => 'toolbar_item',
+    'tab' => array(
+      '#type' => 'link',
+      '#theme' => 'user_message_toolbar_tab',
+      '#theme_wrappers' => array(),
+      '#title' => t('Environment: @name', array('@name' => $environment['name'])),
+      '#href' => '',
+      '#options' => array(
+        'attributes' => array(
+          'title' => t('Environments'),
+        ),
+      ),
+    ),
+    'tray' => array(
+      '#heading' => t('Environment switcher'),
+      'messages' => array(
+        '#markup' => t('TODO: Render the list of environments to switch to.'),
+      ),
+    ),
+    '#weight' => 125,
+  );
+  return $items;
+}
+
+/**
  * Helper function to attach the indicator to the page.
  */
 function environment_indicator_attach_indicator($environment_info, &$page) {
@@ -426,11 +458,7 @@ function environment_indicator_check_access($environment_info) {
  *   TRUE if the extra javascript is needed.
  */
 function environment_indicator_needs_js() {
-  /*
-    TODO Fix this, for now we are not supporting JS colorified bars
-  */
-  return FALSE;
-  return (module_exists('toolbar') && user_access('access toolbar')) || (module_exists('admin_menu') && user_access('access administration menu'));
+  return module_exists('toolbar') && user_access('access toolbar');
 }
 
 /**
