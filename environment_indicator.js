@@ -1,15 +1,17 @@
 (function ($) {
 
-  Drupal.behaviors.environment_indicatorToolbar = {
-    attach: function (context, settings) {
-      if (typeof(Drupal.settings.environment_indicator) != 'undefined') {
-        var $name = $('<div>').addClass('environment-indicator-name-wrapper').html(Drupal.settings.environment_indicator['environment-indicator-name']);
-        $('#toolbar-administration', context).once('environment_indicator').prepend($name);
-        $('#toolbar-administration', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
-        $('#toolbar-administration .bar', context).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.15, true));
-      };
-    }
-  };
+"use strict";
+
+Drupal.behaviors.environmentIndicatorToolbar = {
+  attach: function (context, settings) {
+    if (typeof(Drupal.settings.environment_indicator) != 'undefined') {
+      var $name = $('<div>').addClass('environment-indicator-name-wrapper').html(Drupal.settings.environment_indicator['environment-indicator-name']);
+      $('#toolbar-administration', context).once('environment_indicator').prepend($name);
+      $('#toolbar-administration', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
+      $('#toolbar-administration .bar', context).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.15, true));
+    };
+  }
+};
   
   // Drupal.behaviors.environment_indicatorAdminMenu = {
   //   attach: function (context, settings) {
@@ -32,13 +34,18 @@
   //   }
   // }
   // 
-  // Drupal.behaviors.environment_indicator_admin = {
-  //   attach: function() {
-  //     // Add the farbtastic tie-in
-  //     if ($.isFunction($.farbtastic)) {
-  //       Drupal.settings.environment_indicator_color_picker = $('#environment-indicator-color-picker').farbtastic('#ctools-export-ui-edit-item-form #edit-color');
-  //     };
-  //   }
-  // }
+/**
+ * Add the farbtastic tie-in.
+ */
+Drupal.behaviors.environmentIndicatorAdmin = {
+  attach: function (context) {
+    if (typeof Drupal.color != 'undefined') {
+      var $placeholder = $('#environment-indicator-color-picker');
+      if ($placeholder.length) {
+        Drupal.settings.environment_indicator_color_picker = $placeholder.farbtastic('#environment-indicator-form #edit-color');        
+      };
+    };
+  }
+};
 
 })(jQuery);

@@ -1,0 +1,16 @@
+name: Environment indicator
+type: module
+description: Adds a color indicator for the different environments.
+package: Development
+core: 8.x
+
+scripts:
+  - environment_indicator.js
+  - color.js
+
+files:
+  - plugins/ctools_export_ui_environment_indicator.class.php
+
+stylesheets:
+  all:
+    - environment_indicator.css
