@@ -1,55 +1,35 @@
 <?php
-
-/**
- * @file
- * Definition of Drupal\environment_indicator\EnvironmentIndicatorFormController.
- */
-
 namespace Drupal\environment_indicator;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityFormController;
 
-/**
- * Base form controller for environment edit forms.
- */
 class EnvironmentIndicatorFormController extends EntityFormController {
-
   /**
-   * Overrides Drupal\Core\Entity\EntityFormController::form().
+   * This actually builds your form.
    */
-  public function form(array $form, array &$form_state, EntityInterface $environment) {
+  public function form(array $form, array &$form_state) {
+    $environment_indicator = $this->entity;
 
-    // Check whether we need a deletion confirmation form.
-    if (isset($form_state['confirm_delete']) && isset($form_state['values']['name'])) {
-      return environment_indicator_confirm_delete($form, $form_state, $form_state['values']['name']);
-    }
-    $form['human_name'] = array(
+    $form['name'] = array(
       '#type' => 'textfield',
       '#title' => t('Name'),
-      '#default_value' => $environment->name,
-      '#maxlength' => 255,
-      '#required' => TRUE,
+      '#default_value' => $environment_indicator->label(),
     );
-    $form['name'] = array(
+    $form['machine'] = array(
       '#type' => 'machine_name',
-      '#default_value' => $environment->id(),
-      '#maxlength' => 255,
       '#machine_name' => array(
+        'source' => array('name'),
         'exists' => 'environment_indicator_load',
-        'source' => array('human_name'),
       ),
-    );
-    $form['description'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Description'),
-      '#default_value' => $environment->description,
+      '#default_value' => $environment_indicator->id(),
+      '#disabled' => !empty($environment_indicator->machine),
     );
     $form['regexurl'] = array(
       '#type' => 'textfield',
       '#title' => t('Hostname'),
       '#description' => t('The hostname you want to detect. You can use a regular expression in this field. This regular expression will be run against the current URL to determine wether the environment is active or not. If you use a regular expression here this environment will <strong>not be availabe</strong> for environment switch.'),
-      '#default_value' => $environment->regexurl,
+      '#default_value' => $environment_indicator->regexurl,
     );
     $form['color_picker'] = array(
       '#markup' => '<div id="environment-indicator-color-picker"></div>',
@@ -58,7 +38,7 @@ class EnvironmentIndicatorFormController extends EntityFormController {
       '#type' => 'textfield',
       '#title' => t('Color'),
       '#description' => t('Color for the indicator. Ex: #D0D0D0.'),
-      '#default_value' => $environment->color ?: '#D0D0D0',
+      '#default_value' => $environment_indicator->color ?: '#D0D0D0',
       '#attached' => array(
         // Add Farbtastic color picker.
         'library' => array(
@@ -66,116 +46,57 @@ class EnvironmentIndicatorFormController extends EntityFormController {
         ),
       ),
     );
-    $form['weight'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Weight'),
-      '#description' => t('Defines the order how the regular expressions are applied.'),
-      '#default_value' => $environment->weight,
-    );
     $form['position'] = array(
       '#title' => t('Position'),
-      '#description' => t('Wether you want the indicator at the top or at the bottom.'),
+      '#descripyion' => t('Wether you want the indicator at the top or at the bottom.'),
       '#type' => 'radios',
       '#options' => array(
         'top' => t('Top'),
         'bottom' => t('Bottom'),
       ),
-      '#default_value' => $environment->position,
+      '#default_value' => $environment_indicator->position,
     );
     $form['fixed'] = array(
       '#title' => t('Fixed'),
-      '#description' => t('Check this if you want the indicator to be positioned fixed.'),
+      '#descripyion' => t('Check this if you want the indicator to be positioned fixed.'),
       '#type' => 'checkbox',
-      '#default_value' => $environment->fixed,
+      '#default_value' => $environment_indicator->fixed,
     );
 
-    return parent::form($form, $form_state, $environment);
+    return $form;
   }
 
   /**
-   * Returns an array of supported actions for the current entity form.
-   */
-  protected function actions(array $form, array &$form_state) {
-    // If we are displaying the delete confirmation skip the regular actions.
-    if (empty($form_state['confirm_delete'])) {
-      $actions = parent::actions($form, $form_state);
-      array_unshift($actions['delete']['#submit'], array($this, 'submit'));
-      return $actions;
-    }
-    else {
-      return array();
-    }
-  }
-
-  /**
-   * Overrides Drupal\Core\Entity\EntityFormController::validate().
-   */
-  public function validate(array $form, array &$form_state) {
-    parent::validate($form, $form_state);
-
-    // Make sure that the machine name of the environment is not in the
-    // disallowed list (names that conflict with menu items, such as 'list'
-    // and 'add').
-    // During the deletion there is no 'name' key.
-    if (isset($form_state['values']['name'])) {
-      // Do not allow machine names to conflict with environment indicator
-      // path arguments.
-      $name = $form_state['values']['name'];
-      $disallowed = array('add', 'list', 'manage');
-      if (in_array($name, $disallowed)) {
-        form_set_error('name', t('The machine-readable name cannot be "add", "list", or "manage".'));
-      }
-    }
-  }
-
-  /**
-   * Overrides Drupal\Core\Entity\EntityFormController::submit().
-   */
-  public function submit(array $form, array &$form_state) {
-    if ($form_state['triggering_element']['#value'] == t('Delete')) {
-      // Rebuild the form to confirm environment deletion.
-      $form_state['rebuild'] = TRUE;
-      $form_state['confirm_delete'] = TRUE;
-      return NULL;
-    }
-    else {
-      return parent::submit($form, $form_state);
-    }
-  }
-
-  /**
-   * Overrides Drupal\Core\Entity\EntityFormController::save().
+   * Save your config entity.
+   *
+   * There will eventually be default code to rely on here, but it doesn't exist
+   * yet.
    */
   public function save(array $form, array &$form_state) {
     $environment = $this->getEntity($form_state);
+    $environment->save();
+    drupal_set_message(t('Saved the %label environment.', array(
+      '%label' => $environment->label(),
+    )));
 
-    // Prevent leading and trailing spaces in environment names.
-    $environment->name = trim($environment->name);
-
-    switch (environment_indicator_save($environment)) {
-      case SAVED_NEW:
-        drupal_set_message(t('Created new environment %name.', array('%name' => $environment->name)));
-        watchdog('environment_indicator', 'Created new environment %name.', array('%name' => $environment->name), WATCHDOG_NOTICE, l(t('edit'), 'admin/config/development/environment-indicator/manage/' . $environment->id() . '/edit'));
-        $form_state['redirect'] = 'admin/config/development/environment-indicator';
-        break;
-
-      case SAVED_UPDATED:
-        drupal_set_message(t('Updated environment %name.', array('%name' => $environment->name)));
-        watchdog('environment_indicator', 'Updated environment %name.', array('%name' => $environment->name), WATCHDOG_NOTICE, l(t('edit'), 'admin/config/development/environment-indicator/manage/' . $environment->id() . '/edit'));
-        $form_state['redirect'] = 'admin/config/development/environment-indicator/manage';
-        break;
-    }
-
-    $form_state['values']['name'] = $environment->id();
-    $form_state['name'] = $environment->id();
+    $form_state['redirect'] = 'admin/config/development/environment-indicator';
   }
-  
+
   /**
-   * Overrides Drupal\Core\Entity\EntityFormController::delete().
+   * Delete your config entity.
+   *
+   * There will eventually be default code to rely on here, but it doesn't exist
+   * yet.
    */
   public function delete(array $form, array &$form_state) {
+    $destination = array();
+    if (isset($_GET['destination'])) {
+      $destination = drupal_get_destination();
+      unset($_GET['destination']);
+    }
+
     $entity = $this->getEntity($form_state);
-    $form_state['redirect'] = 'admin/config/development/environment-indicator/manage/' . $entity->id() . '/delete';
+    $form_state['redirect'] = array('admin/config/development/environment-indicator/manage/' . $entity->id() . '/delete', array('query' => $destination));
   }
 
 }

@@ -2,166 +2,164 @@
 
 /**
  * @file
- * Definition of Drupal\environment_indicator\EnvironmentIndicatorListController.
+ * Contains \Drupal\environment_indicator\EnvironmentIndicatorListController.
  */
 
 namespace Drupal\environment_indicator;
 
 use Drupal\Core\Config\Entity\ConfigEntityListController;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormInterface;
 
 /**
- * Provides a listing of contact categories.
+ * Provides a listing of environments.
  */
-class EnvironmentIndicatorListController extends ConfigEntityListController {
-
+class EnvironmentIndicatorListController extends ConfigEntityListController implements FormInterface {
   /**
-   * Overrides Drupal\Core\Entity\EntityListController::load();
+   * {@inheritdoc}
    */
-  public function load() {
-    $entities = array(
-      'enabled' => array(),
-      'disabled' => array(),
-    );
-    foreach (parent::load() as $entity) {
-      if ($entity->isEnabled()) {
-        $entities['enabled'][] = $entity;
-      }
-      else {
-        $entities['disabled'][] = $entity;
-      }
-    }
-    return $entities;
+  public function getFormID() {
+    return 'environment_indicator_overview_environments';
   }
 
   /**
-   * Overrides Drupal\Core\Entity\EntityListController::buildRow();
-   */
-  public function buildRow(EntityInterface $entity) {
-    return array(
-      'data' => array(
-        'name' => $entity->get('human_name'),
-        'description' => $entity->get('description'),
-        'operations' => array(
-          'data' => $this->buildOperations($entity),
-        ),
-      ),
-      'title' => t('Machine name: ') . $entity->id(),
-      'class' => array($entity->isEnabled() ? 'views-ui-list-enabled' : 'views-ui-list-disabled'),
-    );
-  }
-
-
-  /**
-   * Overrides Drupal\Core\Entity\EntityListController::buildHeader().
+   * {@inheritdoc}
    */
   public function buildHeader() {
-    $row['name'] = t('Name');
-    $row['description'] = t('Description');
-    $row['operations'] = t('Operations');
+    $row['name'] = t('Environment name');
+    $row['regexurl'] = t('Environment url');
+    $row['weight'] = t('Weight');
+    $row['color'] = t('Color');
+    $row += parent::buildHeader();
+    unset($row['id']);
+    unset($row['label']);
     return $row;
   }
 
   /**
-   * Overrides Drupal\Core\Entity\EntityListController::getOperations().
+   * {@inheritdoc}
    */
-  public function getOperations(EntityInterface $entity) {
-    $uri = $entity->uri();
-    $path = $uri['path'];
+  public function buildRow(EntityInterface $entity) {
+    $row = array();
 
-    $definition['edit'] = array(
-      'title' => t('Edit'),
-      'href' => "$path/edit",
-      'weight' => -5,
+    // Override default values to markup elements.
+    $row['#attributes']['class'][] = 'draggable';
+
+    $row['name'] = array(
+      'data' => array('#markup' => $entity->get('name')),
     );
-    if (!$entity->isEnabled()) {
-      $definition['enable'] = array(
-        'title' => t('Enable'),
-        'ajax' => TRUE,
-        'token' => TRUE,
-        'href' => "$path/enable",
-        'weight' => -10,
-      );
-    }
-    else {
-      $definition['disable'] = array(
-        'title' => t('Disable'),
-        'ajax' => TRUE,
-        'token' => TRUE,
-        'href' => "$path/disable",
-        'weight' => 0,
-      );
-    }
-    // This property doesn't exist yet.
-    if (!empty($entity->overridden)) {
-      $definition['revert'] = array(
-        'title' => t('Revert'),
-        'href' => "$path/revert",
-        'weight' => 5,
-      );
-    }
-    else {
-      $definition['delete'] = array(
-        'title' => t('Delete'),
-        'href' => "$path/delete",
-        'weight' => 10,
-      );
-    }
-    return $definition;
+    $row['regexurl'] = array(
+      'data' => array('#markup' => $entity->get('regexurl')),
+    );
+    $row['#weight'] = $entity->get('weight');
+
+    // Add weight column.
+    $row['weight'] = array(
+      '#type' => 'weight',
+      '#title' => t('Weight for @title', array('@title' => $entity->label())),
+      '#title_display' => 'invisible',
+      '#default_value' => $entity->get('weight'),
+      '#attributes' => array('class' => array('weight')),
+    );
+
+    // Add color column.
+    $row['color'] = array(
+      'data' => array(
+        '#type' => 'html_tag',
+        '#tag' => 'pre',
+        '#value' => $entity->get('color'),
+        '#attributes' => array(
+          'class' => array('environment-indicator-color'),
+          'style' => 'border: 3px solid ' . $entity->get('color') . ';',
+        ),
+      )
+    );
+    $row += parent::buildRow($entity);
+    unset($row['id']);
+    unset($row['label']);
+    return $row;
   }
 
-
   /**
-   * Overrides Drupal\Core\Entity\EntityListController::buildOperations();
+   * {@inheritdoc}
    */
-  public function buildOperations(EntityInterface $entity) {
-    $build = parent::buildOperations($entity);
-
-    // Allow operations to specify that they use AJAX.
-    foreach ($build['#links'] as &$operation) {
-      if (!empty($operation['ajax'])) {
-        $operation['attributes']['class'][] = 'use-ajax';
-      }
+  public function render() {
+    $entities = $this->load();
+    if (count($entities) > 1) {
+      // Creates a form for manipulating environment weights if more than one
+      // environment exists.
+      return drupal_get_form($this);
     }
-
-    // Use the dropbutton #type.
-    unset($build['#theme']);
-    $build['#type'] = 'dropbutton';
-
+    $header = $this->buildHeader();
+    unset($header['weight']);
+    $build = array(
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => array(),
+      '#empty' => t('No environments available. <a href="@link">Add environment indicator</a>.', array('@link' => url('admin/config/development/environment-indicator/add'))),
+    );
+    foreach ($entities as $entity) {
+      $row = $this->buildRow($entity);
+      unset($row['#weight']);
+      unset($row['weight']);
+      unset($row['#attributes']);
+      $build['#rows'][$entity->id()]['data'] = $row;
+    }
     return $build;
   }
 
   /**
-   * Overrides Drupal\Core\Entity\EntityListController::render();
+   * {@inheritdoc}
    */
-  public function render() {
-    $entities = $this->load();
-    $list['#type'] = 'container';
-    //$list['#attached']['css'] = ViewFormControllerBase::getAdminCSS();
-    $list['#attached']['library'][] = array('system', 'drupal.ajax');
-    $list['#attributes']['id'] = 'environment-indicator-entity-list';
-    $list['enabled']['heading']['#markup'] = '<h2>' . t('Enabled') . '</h2>';
-    $list['disabled']['heading']['#markup'] = '<h2>' . t('Disabled') . '</h2>';
-    foreach (array('enabled', 'disabled') as $status) {
-      $list[$status]['#type'] = 'container';
-      $list[$status]['#attributes'] = array('class' => array('views-list-section', $status));
-      $list[$status]['table'] = array(
-        '#theme' => 'table',
-        '#header' => $this->buildHeader(),
-        '#rows' => array(),
-      );
-      foreach ($entities[$status] as $entity) {
-        $list[$status]['table']['#rows'][$entity->id()] = $this->buildRow($entity);
+  public function buildForm(array $form, array &$form_state) {
+    $form['environments'] = array(
+      '#type' => 'table',
+      '#header' => $this->buildHeader(),
+      '#tabledrag' => array(
+        array('order', 'sibling', 'weight'),
+      ),
+      '#attributes' => array(
+        'id' => 'environment',
+      ),
+    );
+
+    foreach ($this->load() as $entity) {
+      $form['environments'][$entity->id()] = $this->buildRow($entity);
+    }
+
+    $form['actions']['#type'] = 'actions';
+    $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+      '#button_type' => 'primary',
+    );
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, array &$form_state) {
+    // No validation.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, array &$form_state) {
+    $environments = $form_state['values']['environments'];
+
+    $entities = entity_load_multiple($this->entityType, array_keys($environments));
+    foreach ($environments as $id => $value) {
+      if (isset($entities[$id]) && $value['weight'] != $entities[$id]->get('weight')) {
+        // Update changed weight.
+        $entities[$id]->set('weight', $value['weight']);
+        $entities[$id]->save();
       }
     }
-    // @todo Use a placeholder for the entity label if this is abstracted to
-    // other entity types.
-    $list['enabled']['table']['#empty'] = t('There are no enabled environment indicators.');
-    $list['disabled']['table']['#empty'] = t('There are no disabled environment indicators.');
 
-    return $list;
+    drupal_set_message(t('The configuration options have been saved.'));
   }
-  
-  
 
 }

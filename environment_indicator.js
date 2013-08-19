@@ -26,14 +26,14 @@ Drupal.behaviors.environmentIndicatorToolbar = {
   //   }
   // };
   // 
-  // Drupal.behaviors.environment_indicatorSwitcher = {
-  //   attach: function (context, settings) {
-  //     $('#environment-indicator .environment-indicator-name, #toolbar-administration .environment-indicator-name-wrapper', context).live('click', function () {
-  //       $('#environment-indicator .bar, #toolbar-administration .bar', context).slideToggle('fast');
-  //     });
-  //   }
-  // }
-  // 
+Drupal.behaviors.environmentIndicatorSwitcher = {
+  attach: function (context, settings) {
+    $('#environment-indicator .environment-indicator-name, #toolbar-administration .environment-indicator-name-wrapper', context).bind('click', function () {
+      $('#environment-indicator .item-list, #toolbar-administration .item-list', context).slideToggle('fast');
+    });
+  }
+}
+
 /**
  * Add the farbtastic tie-in.
  */

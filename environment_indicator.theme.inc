@@ -9,12 +9,20 @@
  * Theme function for the indicator name.
  */
 function theme_environment_indicator_indicator_name($variables) {
+  dpm($variables);
   $output = '<div class="environment-indicator-name">' . t($variables['name']) . '</div>';
-  $environments = entity_list_controller('environment_indicator')->load();
+  $environments = environment_indicator_get_all(TRUE);
   $destination = drupal_get_destination();
-  foreach ($environments['enabled'] as $machine => $environment) {
+  foreach ($environments as $machine => $environment) {
     $items[] = array(
-      '#markup' => l(t('Open in %name', array('%name' => t($environment->get('human_name')))), 'http://' . $environment->get('regexurl') . '/' . $destination['destination'], array('html' => TRUE)),
+      'link' => array(
+        '#type' => 'link',
+        '#title' => t('Open in %name', array('%name' => t($environment->get('name')))),
+        '#href' => 'http://' . $environment->get('regexurl') . '/' . $destination['destination'],
+        '#options' => array(
+          'html' => TRUE,
+        ),
+      ),
       '#wrapper_attributes' => array(
         'class' => array('environment-switcher')
       ),
@@ -47,12 +55,7 @@ function theme_environment_indicator_indicator_bar($variables) {
       'style' => 'background-color: ' . $info['color'],
     ),
     'name' => array(
-      '#theme' => 'html_tag',
-      '#tag' => 'div',
-      '#value' => theme('environment_indicator_indicator_name', $info),
-      '#attributes' => array(
-        'class' => array('gradient-bar'),
-      ),
+      '#markup' => '<div class="gradient-bar">' . theme('environment_indicator_indicator_name', $info) . '</div>',
     ),
   );
   return drupal_render($output);

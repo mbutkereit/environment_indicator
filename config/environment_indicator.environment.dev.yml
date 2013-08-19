@@ -1,10 +1,9 @@
 name: environment_indicator_default
 description: 'Default environment.'
 human_name: 'Default environment'
-disabled: true
-text: 'DEFAULT ENVIRONMENT'
+disabled: 0
 color: '#A33'
-weight: 99
+weight: 0
 position: top
 fixed: 0
 regexurl: '.*'

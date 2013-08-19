@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\environment_indicator\EnvironmentAccessController.
+ * Contains \Drupal\environment_indicator\EnvironmentIndicatorAccessController.
  */
 
 namespace Drupal\environment_indicator;
@@ -14,9 +14,9 @@ use Drupal\Core\Session\AccountInterface;
 /**
  * Defines an access controller for the environment entity.
  *
- * @see \Drupal\environment_indicator\Plugin\Core\Entity\Environment.
+ * @see \Drupal\environment_indicator\Plugin\Core\Entity\EnvironmentIndicator.
  */
-class EnvironmentAccessController extends EntityAccessController {
+class EnvironmentIndicatorAccessController extends EntityAccessController {
 
   /**
    * {@inheritdoc}

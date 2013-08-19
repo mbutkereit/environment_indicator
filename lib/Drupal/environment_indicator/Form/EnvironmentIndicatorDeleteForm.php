@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\environment_indicator\Form\EnvironmentDeleteForm.
+ * Contains \Drupal\environment_indicator\Form\EnvironmentIndicatorDeleteForm.
  */
 
 namespace Drupal\environment_indicator\Form;
@@ -13,7 +13,7 @@ use Drupal\Core\Cache\Cache;
 /**
  * Provides a deletion confirmation form for environment_indicator environment.
  */
-class EnvironmentDeleteForm extends EntityConfirmFormBase {
+class EnvironmentIndicatorDeleteForm extends EntityConfirmFormBase {
 
   /**
    * {@inheritdoc}
