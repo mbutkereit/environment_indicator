@@ -3,8 +3,3 @@ description = Adds a color indicator for the different environments.
 package = Developer
 version = VERSION
 core = 8.x
-
-scripts[] = environment_indicator.js
-scripts[] = color.js
-
-stylesheets[all][] = environment_indicator.css
