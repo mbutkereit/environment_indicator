@@ -46,6 +46,9 @@ class EnvironmentIndicatorFormController extends EntityFormController {
         ),
       ),
     );
+    $form['help'] = array(
+      '#markup' => t('You don\'t need to care about position and fixed if you are using the toolbar. If you use the toolbar module, then the environment indicator will be integrated.'),
+    );
     $form['position'] = array(
       '#title' => t('Position'),
       '#descripyion' => t('Wether you want the indicator at the top or at the bottom.'),

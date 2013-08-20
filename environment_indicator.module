@@ -348,6 +348,7 @@ function environment_indicator_admin_menu_output_alter(&$content) {
  */
 function environment_indicator_toolbar() {
   $environment = environment_indicator_get_active();
+  $menu = _environment_indicator_switcher_menu();
   $items['environment_indicator'] = array(
     // Include the toolbar_tab_wrapper to style the link like a toolbar tab.
     // Exclude the theme wrapper if custom styling is desired.
@@ -364,12 +365,7 @@ function environment_indicator_toolbar() {
         ),
       ),
     ),
-    'tray' => array(
-      '#heading' => t('Environment switcher'),
-      'messages' => array(
-        '#markup' => t('TODO: Render the list of environments to switch to.'),
-      ),
-    ),
+    'tray' => $menu,
     '#weight' => 125,
   );
   return $items;
@@ -466,6 +462,42 @@ function environment_indicator_needs_js() {
  */
 function _environment_indicator_regex_filter($item) {
   return !preg_match("/[\*\?\[\]\(\)]/", $item->regexurl);
+}
+
+/**
+ * Helper function to generate a menu with the environments to switch to.
+ */
+function _environment_indicator_switcher_menu() {
+  $element = array(
+    '#heading' => t('Environment indicator'),
+    'toolbar_indicators' => array(
+      '#type' => 'container',
+      '#attributes' => array(
+        'class' => array('toolbar-menu-environment-indicator'),
+      ),
+      'indicator_menu' => array(
+        '#sorted' => TRUE,
+        '#theme_wrappers' => array('menu_tree'),
+      ),
+    ),
+  );
+  $environments = environment_indicator_get_all(TRUE);
+  $active_environment = environment_indicator_get_active();
+  foreach ($environments as $machine => $environment) {
+    $element['toolbar_indicators']['indicator_menu'][$environment->id()] = array(
+      '#theme' => 'menu_link',
+      '#title' => t('Open in: %name', array('%name' => $environment->label())),
+      '#href' => 'http://' . $environment->get('regexurl') . '/' . current_path(),
+      '#localized_options' => array(
+        'html' => TRUE,
+      ),
+      '#below' => array(),
+      '#attributes' => array(
+        'class' => array('leaf'),
+      ),
+    );
+  }
+  return $element;
 }
 
 /**

@@ -12,14 +12,13 @@ function theme_environment_indicator_indicator_name($variables) {
   $output = '<div class="environment-indicator-name">' . t($variables['name']) . '</div>';
   $environments = environment_indicator_get_all(TRUE);
   $active_environment = environment_indicator_get_active();
-  $destination = drupal_get_destination();
   foreach ($environments as $machine => $environment) {
     if ($machine != $active_environment['machine']) {
       $items[] = array(
         'link' => array(
           '#type' => 'link',
           '#title' => t('Open in %name', array('%name' => t($environment->get('name')))),
-          '#href' => 'http://' . $environment->get('regexurl') . '/' . $destination['destination'],
+          '#href' => 'http://' . $environment->get('regexurl') . '/' . current_path(),
           '#options' => array(
             'html' => TRUE,
           ),
