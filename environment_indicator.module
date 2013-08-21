@@ -87,6 +87,10 @@ function environment_indicator_menu() {
     'description' => 'Configure the indicators for each environment.',
     'route_name' => 'environment_indicator_list',
   );
+  $items['admin/config/development/environment-indicator/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
   $items['admin/config/development/environment-indicator/settings'] = array(
     'title' => 'Settings',
     'descriptions' => 'Configure extra settings for the environment indicator.',

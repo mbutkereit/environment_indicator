@@ -7,7 +7,7 @@ Drupal.behaviors.environmentIndicatorToolbar = {
     if (typeof(Drupal.settings.environment_indicator) != 'undefined') {
       // $('#toolbar-administration', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
       $('#toolbar-administration .toolbar-bar', context).css('background-color', Drupal.settings.environment_indicator['toolbar-color']);
-      $('#toolbar-administration .toolbar-lining', context).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.15, true));
+      $('#toolbar-administration .toolbar-lining', context).css('background-color', changeColor(Drupal.settings.environment_indicator['toolbar-color'], 0.15, false));
     };
   }
 };
