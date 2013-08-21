@@ -87,28 +87,14 @@ function environment_indicator_menu() {
     'description' => 'Configure the indicators for each environment.',
     'route_name' => 'environment_indicator_list',
   );
-  // This is your add form.
-  $items['admin/config/development/environment-indicator/add'] = array(
-    'title' => 'Add environment indicator',
-    'page callback' => 'environment_indicator_add',
-    'access arguments' => array('administer environment indicator settings'),
-    'type' => MENU_LOCAL_ACTION,
+  $items['admin/config/development/environment-indicator/settings'] = array(
+    'title' => 'Settings',
+    'descriptions' => 'Configure extra settings for the environment indicator.',
+    'route_name' => 'environment_indicator_settings',
+    'type' => MENU_LOCAL_TASK,
   );
 
   return $items;
-}
-
-/**
- * Environment indicator add form.
- */
-function environment_indicator_add() {
-  drupal_set_title(t('Add new environment'));
-  $environment = entity_create('environment_indicator', array(
-    // Default the new environment to the site's default language. This is the
-    // most likely default value until we have better flexible settings.
-    'langcode' => language_default()->id,
-  ));
-  return Drupal::entityManager()->getForm($environment);
 }
 
 /**
@@ -132,11 +118,6 @@ function environment_indicator_permission() {
       'description' => t('See the evironment indicator if the user is in the %name environment.', array('%name' => $environment->name)),
     );
   }
-  // Manually add the overritten environment.
-  $permissons['access environment indicator overwritten_environment'] = array(
-    'title' => t('See environment indicator for the overritten environment'),
-    'description' => t('See the evironment indicator if the user is in the environment defined in settings.php.'),
-  );
   return $permissons;
 }
 
@@ -433,16 +414,12 @@ function environment_indicator_get_all($fixed = FALSE) {
  */
 function environment_indicator_check_access($environment_info) {
   // Do not show the indicator on select pages.
-  // $off_pages = variable_get('environment_indicator_suppress_pages', "");
-  // $path = drupal_get_path_alias($_GET['q']);
+  $supress_pages = \Drupal::config('environment_indicator.options')->get('suppress_pages');
   // Compare with the internal and path alias (if any).
-  // $page_match = drupal_match_path($path, $off_pages);
-  // if ($path != $_GET['q']) {
-  //   $page_match = $page_match || drupal_match_path($_GET['q'], $off_pages);
-  // }
-  // if ($page_match) {
-  //   return FALSE;
-  // }
+  $page_match = drupal_match_path(current_path(), $supress_pages);
+  if ($page_match) {
+    return FALSE;
+  }
   
   return user_access('access environment indicator') || user_access('access environment indicator ' . $environment_info['machine']);
 }
@@ -505,39 +482,4 @@ function _environment_indicator_switcher_menu() {
  */
 function _environment_indicator_active($item) {
   return empty($item->disabled) || !$item->disabled;
-}
-
-/**
- * Helper function to load the overritten indicator.
- * 
- * @return array
- *   Environment info array.
- */
-function _environment_indicator_load_overritten() {
-  $env = &drupal_static(__FUNCTION__);
-  if (isset($env)) {
-    return $env;
-  }
-  $env = array(
-    'machine' => 'overwritten_environment',
-    'name' => variable_get('environment_indicator_overwritten_name', variable_get('environment_indicator_text', t('Default environment.'))),
-    'weight' => -99,
-    'color' => variable_get('environment_indicator_overwritten_color', variable_get('environment_indicator_color', '#F55')),
-    'position' => variable_get('environment_indicator_overwritten_position', 'top'),
-    'fixed' => variable_get('environment_indicator_overwritten_fixed', FALSE),
-  );
-  if (_environment_indicator_has_old_vars() && environment_indicator_check_access($env)) {
-    drupal_set_message(t('You have old configuration for the Evironment Indicator. Please check the !report for instruction on how to correct this.', array('!report' => l(t('status report'), 'admin/reports/status'))), 'warning');
-  }
-  return $env;
-}
-
-/**
- * Helper function to determine if 7.x-1.x variables are present.
- */
-function _environment_indicator_has_old_vars() {
-  $color = !is_null(variable_get('environment_indicator_color', NULL));
-  $enabled = !is_null(variable_get('environment_indicator_enabled', NULL));
-  $name = !is_null(variable_get('environment_indicator_text', NULL));
-  return $color || $enabled || $name;
 }

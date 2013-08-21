@@ -63,35 +63,3 @@ function theme_environment_indicator_indicator_bar($variables) {
   );
   return drupal_render($output);
 }
-
-/**
- * Theme function for the overridden environment indicator in the header of the list.
- */
-function theme_environment_indicator_overritten_header($variables) {
-  $header = '<div class="overriden-indicator"><h2 class="label">' . t('Overriden indicator.') . '</h2>';
-  $header .= '<div class="description">' . t('This indicator is in your settings.php file and will take precedence over any other indicator that matches a hostname. To properly set an indicator in your settings.php file, please visit the !help.', array('!help' => l(t('help pages'), 'admin/help/environment_indicator'))) . '</div></div>';
-  $table = '<p>' . t('There is no overriden environment indicator in you settings.php file. You only need one in case you want your indicator to be stored in your settings.php file instead of matching against the hostname. The environment switcher is not supported for overriden environments.') . '</p>';
-  if (!is_null(variable_get('environment_indicator_overwrite', NULL)) || !is_null(variable_get('environment_indicator_enabled', NULL))) {
-    $headers = array(
-      t('Enabled'),
-      t('Name'),
-      t('Color'),
-      t('Position'),
-      t('Fixed'),
-    );
-    $env = _environment_indicator_load_overritten();
-    $color = $env['color'];
-    if (strpos($color, '#') !== 0) {
-      $color .= ' <span class="error">(' . t('Invalid color definition') . ')</span>';
-    }
-    $rows[] = array(
-      _environment_indicator_is_overritten() ? 'TRUE' : 'FALSE',
-      $env['name'],
-      $color,
-      $env['position'],
-      $env['fixed'] ? 'TRUE' : 'FALSE',
-    );
-    $table = theme('table', array('rows' => $rows, 'header' => $headers));
-  }
-  return $header . $table . '<h2 class="label">' . t('Hostname indicators') . '</h2>';
-}

@@ -18,3 +18,17 @@ environment_indicator_update:
     _entity_form: 'environment_indicator'
   requirements:
     _entity_access: 'environment_indicator.update'
+
+environment_indicator_add:
+  pattern: '/admin/config/development/environment-indicator/add'
+  defaults:
+    _entity_form: 'environment_indicator'
+  requirements:
+    _entity_create_access: 'environment_indicator'
+
+environment_indicator_settings:
+  pattern: '/admin/config/development/environment-indicator/settings'
+  defaults:
+    _form: '\Drupal\environment_indicator\Form\EnvironmentIndicatorSettingsForm'
+  requirements:
+    _permission: 'administer environment indicator settings'
