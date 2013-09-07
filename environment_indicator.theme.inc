@@ -9,15 +9,15 @@
  * Theme function for the indicator name.
  */
 function theme_environment_indicator_indicator_name($variables) {
-  $output = '<div class="environment-indicator-name">' . t($variables['human_name']) . '</div>';
+  $output = '<div class="environment-indicator-name">' . t($variables['name']) . '</div>';
   $environments = environment_indicator_get_all(TRUE);
   $active_environment = environment_indicator_get_active();
-  foreach ($environments as $name => $environment) {
-    if ($name != $active_environment['name']) {
+  foreach ($environments as $machine => $environment) {
+    if ($machine != $active_environment['machine']) {
       $items[] = array(
         'link' => array(
           '#type' => 'link',
-          '#title' => t('Open in %name', array('%name' => t($environment->get('human_name')))),
+          '#title' => t('Open in %name', array('%name' => t($environment->label()))),
           '#href' => 'http://' . $environment->get('regexurl') . '/' . current_path(),
           '#options' => array(
             'html' => TRUE,
@@ -50,7 +50,7 @@ function theme_environment_indicator_indicator_bar($variables) {
     '#type' => 'container',
     '#attributes' => array(
       'class' => array(
-        drupal_html_class('environment-indicator-' . $info['name']),
+        drupal_html_class('environment-indicator-' . $info['machine']),
         'position-' . $info['position'],
         'fixed-' . ($info['fixed'] ? 'yes' : 'no'),
       ),

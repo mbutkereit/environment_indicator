@@ -77,6 +77,10 @@ function environment_indicator_menu() {
     'route_name' => 'environment_indicator_settings',
     'type' => MENU_LOCAL_TASK,
   );
+  $items['admin/config/development/environment-indicator/add'] = array(
+    'route_name' => 'taxonomy_vocabulary_add',
+    'type' => MENU_SIBLING_LOCAL_TASK,
+  );
 
   return $items;
 }
@@ -184,7 +188,7 @@ function environment_indicator_toolbar() {
       '#type' => 'link',
       '#theme' => 'user_message_toolbar_tab',
       '#theme_wrappers' => array(),
-      '#title' => t('Environment: @name', array('@name' => $environment['human_name'])),
+      '#title' => t('Environment: @name', array('@name' => $environment['name'])),
       '#href' => '',
       '#options' => array(
         'attributes' => array(
@@ -223,7 +227,7 @@ function environment_indicator_get_active() {
     if (preg_match("/$environment->regexurl/", $_SERVER['HTTP_HOST'])) {
       $matches[] = array(
         'name' => $environment->name,
-        'human_name' => $environment->human_name,
+        'machine' => $environment->machine,
         'weight' => $environment->weight,
         'color' => $environment->color,
         'position' => $environment->position,
