@@ -34,26 +34,6 @@ function environment_indicator_help($path, $arg) {
 }
 
 /**
- * Implements hook_requirements().
- */
-function environment_indicator_requirements($phase) {
-  $requirements = array();
-
-  // Report Drupal version
-  if ($phase == 'runtime') {
-    if (_environment_indicator_has_old_vars()) {
-      $requirements['environment_indicator'] = array(
-        'title' => t('Environment indicator'),
-        'value' => t('You are using old environment indicator variables. Please check the !help on how to upgrade your variables for the new release, and then remove the old ones.', array('!help' => l(t('help pages'), 'admin/help/environment_indicator'))),
-        'severity' => REQUIREMENT_ERROR
-      );
-    }
-  }
-
-  return $requirements;
-}
-
-/**
  * Implements hook_library_info().
  */
 function environment_indicator_library_info() {
@@ -132,144 +112,6 @@ function environment_indicator_load($name) {
   return entity_load('environment_indicator', $name);
 }
 
-
-/**
- * Implements hook_ctools_plugin_api().
- */
-function environment_indicator_ctools_plugin_api($owner, $api) {
-  if ($owner == 'environment_indicator' && $api == 'default_environment_indicator_environments') {
-    return array('version' => 1);
-  }
-}
-
-/**
- * Implementation of hook_default_environment_indicator_environment().
- */
-function environment_indicator_default_environment_indicator_environment() {
-  $export = array();
-
-  $environment = new stdClass;
-  $environment->api_version = 1;
-  $environment->machine = 'default_environment';
-  $environment->name = t('Default environment');
-  $environment->regexurl = '.*';
-  $environment->settings = array('color' => '#A33', 'weight' => 99, 'position' => 'top', 'fixed' => FALSE);
-  $export['default_environment'] = $environment;
-
-  return $export;
-}
-
-/**
- * Implementation of hook_ctools_plugin_directory().
- */
-function environment_indicator_ctools_plugin_directory($module, $type) {
-  // Load the export_ui plugin.
-  if ($type =='export_ui') {
-    return 'plugins/export_ui';
-  }
-}
-
-/**
- * System settings form
- */
-function environment_indicator_ctools_export_ui_form(&$form, &$form_state) {
-  $environment = $form_state['item'];
-  $environment->color = '';
-  $environment->weight = '';
-  $environment->position = 'top';
-  $environment->fixed = FALSE;
-  if (!empty($environment->settings)) {
-    $settings = $environment->settings;
-    $environment->color = $settings['color'];
-    $environment->weight = $settings['weight'];
-    $environment->position = $settings['position'];
-    $environment->fixed = $settings['fixed'];
-  }
-  unset($form['info']);
-  $form['name'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Name'),
-    '#description' => t('Name for this environment.'),
-    '#default_value' => $environment->name,
-    '#id' => 'name'
-  );
-  $form['machine'] = array(
-    '#title' => t('Machine name'),
-    '#type' => 'machine_name',
-    '#default_value' => $environment->machine,
-    '#maxlength' => 32,
-    '#required' => TRUE,
-    '#machine_name' => array(
-      'exists' => 'environment_indicator_machine_available',
-      'source' => array('name'),
-    ),
-    '#id' => 'machine-name',
-  );
-  $form['regexurl'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Hostname'),
-    '#description' => t('The hostname you want to detect. You can use a regular expression in this field. This regular expression will be run against the current URL to determine wether the environment is active or not. If you use a regular expression here this environment will <strong>not be availabe</strong> for environment switch.'),
-    '#default_value' => $environment->regexurl,
-  );
-  $form['color_picker'] = array(
-    '#markup' => '<div id="environment-indicator-color-picker"></div>',
-  );
-  $form['color'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Color'),
-    '#description' => t('Color for the indicator. Ex: #D0D0D0.'),
-    '#default_value' => $environment->color ?: '#D0D0D0',
-    '#attached' => array(
-      // Add Farbtastic color picker.
-      'library' => array(
-        array('system', 'farbtastic'),
-      ),
-    ),
-  );
-  $form['weight'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Weight'),
-    '#description' => t('Defines the order how the regular expressions are applied.'),
-    '#default_value' => $environment->weight,
-  );
-  $form['position'] = array(
-    '#title' => t('Position'),
-    '#descripyion' => t('Wether you want the indicator at the top or at the bottom.'),
-    '#type' => 'radios',
-    '#options' => array(
-      'top' => t('Top'),
-      'bottom' => t('Bottom'),
-    ),
-    '#default_value' => $environment->position,
-  );
-  $form['fixed'] = array(
-    '#title' => t('Fixed'),
-    '#descripyion' => t('Check this if you want the indicator to be positioned fixed.'),
-    '#type' => 'checkbox',
-    '#default_value' => $environment->fixed,
-  );
-  return $form;
-}
-
-/**
- * Submit callback for environment_indicator_ctools_export_ui_form
- */
-function environment_indicator_ctools_export_ui_form_submit(&$form, &$form_state) {
-  $form_state['item']->settings = array(
-    'color' => $form_state['values']['color'],
-    'weight' => $form_state['values']['weight'],
-    'position' => $form_state['values']['position'],
-    'fixed' => $form_state['values']['fixed'],
-  );
-}
-
-/**
- * Helper function to check if the machine name is available.
- */
-function environment_indicator_machine_available($machine) {
-  return db_query("SELECT COUNT(*) FROM {environment_indicator_environment} WHERE machine = ':machine'", array(':machine' => $machine))->fetchField() > 0 && $machine != 'overwritten_environment';
-}
-
 /**
  * Implements hook_page_build().
  */
@@ -342,7 +184,7 @@ function environment_indicator_toolbar() {
       '#type' => 'link',
       '#theme' => 'user_message_toolbar_tab',
       '#theme_wrappers' => array(),
-      '#title' => t('Environment: @name', array('@name' => $environment['name'])),
+      '#title' => t('Environment: @name', array('@name' => $environment['human_name'])),
       '#href' => '',
       '#options' => array(
         'attributes' => array(
@@ -381,7 +223,7 @@ function environment_indicator_get_active() {
     if (preg_match("/$environment->regexurl/", $_SERVER['HTTP_HOST'])) {
       $matches[] = array(
         'name' => $environment->name,
-        'machine' => $environment->machine,
+        'human_name' => $environment->human_name,
         'weight' => $environment->weight,
         'color' => $environment->color,
         'position' => $environment->position,
@@ -402,9 +244,9 @@ function environment_indicator_get_active() {
  *   those that do not use a regular expression for detection.
  */
 function environment_indicator_get_all($fixed = FALSE) {
-  // $environments = array_filter($environments, '_environment_indicator_active');
-  // Check if the regular expression is a environment name.
   $environments = entity_load_multiple('environment_indicator');
+  $environments = array_filter($environments, '_environment_indicator_active');
+  // Check if the regular expression is a environment name.
   return $fixed ? array_filter($environments, '_environment_indicator_regex_filter') : $environments;
 }
 
@@ -463,7 +305,20 @@ function _environment_indicator_switcher_menu() {
     ),
   );
   $environments = environment_indicator_get_all(TRUE);
-  $active_environment = environment_indicator_get_active();
+  if (empty($environments)) {
+    $element['toolbar_indicators']['indicator_menu']['empty'] = array(
+      '#theme' => 'menu_link',
+      '#title' => '- ' . t('There are no other environments available.') . ' -',
+      '#href' => current_path(),
+      '#localized_options' => array(
+        'html' => TRUE,
+      ),
+      '#below' => array(),
+      '#attributes' => array(
+        'class' => array('leaf'),
+      ),
+    );
+  }
   foreach ($environments as $machine => $environment) {
     $element['toolbar_indicators']['indicator_menu'][$environment->id()] = array(
       '#theme' => 'menu_link',
@@ -485,5 +340,6 @@ function _environment_indicator_switcher_menu() {
  * Filter callback
  */
 function _environment_indicator_active($item) {
-  return empty($item->disabled) || !$item->disabled;
+  // TODO: Implement an action for the configuration entity to disable it.
+  return TRUE;
 }

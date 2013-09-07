@@ -1,10 +1,10 @@
 <?php
 /**
  * @file
- * Contains \Drupal\environment_indicator\Plugin\Core\Entity\EnvironmentIndicator.
+ * Contains \Drupal\environment_indicator\Entity\EnvironmentIndicator.
  */
 
-namespace Drupal\environment_indicator\Plugin\Core\Entity;
+namespace Drupal\environment_indicator\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
@@ -30,7 +30,7 @@ use Drupal\Core\Annotation\Translation;
  *   config_prefix = "environment_indicator.environment",
  *   entity_keys = {
  *     "id" = "machine",
- *     "label" = "name",
+ *     "label" = "human_name",
  *     "uuid" = "uuid"
  *   }
  * )
