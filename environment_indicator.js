@@ -30,6 +30,12 @@ Drupal.behaviors.environmentIndicatorSwitcher = {
     $('#environment-indicator .environment-indicator-name, #toolbar-administration .environment-indicator-name-wrapper', context).bind('click', function () {
       $('#environment-indicator .item-list, #toolbar-administration .item-list', context).slideToggle('fast');
     });
+    $('#environment-indicator.position-top.fixed-yes').once(function () {
+      $('body').css('margin-top', '+=' + $('#environment-indicator.position-top.fixed-yes').height());
+    });
+    $('#environment-indicator.position-bottom.fixed-yes').once(function () {
+      $('body').css('margin-bottom', '+=' + $('#environment-indicator.position-bottom.fixed-yes').height());
+    });
   }
 }
 
