@@ -121,6 +121,7 @@ class EnvironmentIndicatorListController extends ConfigEntityListController impl
       '#attributes' => array(
         'id' => 'environment',
       ),
+      '#empty' => t('No environments available. <a href="@link">Add environment indicator</a>.', array('@link' => url('admin/config/development/environment-indicator/add'))),
     );
 
     foreach ($this->load() as $entity) {

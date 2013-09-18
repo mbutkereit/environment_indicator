@@ -323,19 +323,22 @@ function _environment_indicator_switcher_menu() {
       ),
     );
   }
+  $current_environment = environment_indicator_get_active();
   foreach ($environments as $machine => $environment) {
-    $element['toolbar_indicators']['indicator_menu'][$environment->id()] = array(
-      '#theme' => 'menu_link',
-      '#title' => t('Open in: %name', array('%name' => $environment->label())),
-      '#href' => 'http://' . $environment->get('regexurl') . '/' . current_path(),
-      '#localized_options' => array(
-        'html' => TRUE,
-      ),
-      '#below' => array(),
-      '#attributes' => array(
-        'class' => array('leaf'),
-      ),
-    );
+    if ($machine != $current_environment['machine']) {
+      $element['toolbar_indicators']['indicator_menu'][$environment->id()] = array(
+        '#theme' => 'menu_link',
+        '#title' => t('Open in: %name', array('%name' => $environment->label())),
+        '#href' => 'http://' . $environment->get('regexurl') . '/' . current_path(),
+        '#localized_options' => array(
+          'html' => TRUE,
+        ),
+        '#below' => array(),
+        '#attributes' => array(
+          'class' => array('leaf'),
+        ),
+      );
+    }
   }
   return $element;
 }
