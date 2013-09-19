@@ -96,3 +96,18 @@ div#toolbar-administration div.toolbar-menu { padding: 5px 20px 5px 10px; }
   border-radius: 5px;
   background-color: #EDEDE0;
 }
+
+.toolbar-bar .toolbar-icon-environment:before {
+  background-image: url("images/env-bebebe.svg");
+}
+.no-svg .toolbar-bar .toolbar-icon-environment:before {
+  background-image: url("images/env-bebebe.png");
+}
+.toolbar-bar .toolbar-icon-environment:active:before,
+.toolbar-bar .toolbar-icon-environment.active:before {
+  background-image: url("images/env-ffffff.svg");
+}
+.no-svg .toolbar-bar .toolbar-icon-environment:active:before,
+.no-svg .toolbar-bar .toolbar-icon-environment.active:before {
+  background-image: url("images/env-ffffff.png");
+}

@@ -188,11 +188,12 @@ function environment_indicator_toolbar() {
       '#type' => 'link',
       '#theme' => 'user_message_toolbar_tab',
       '#theme_wrappers' => array(),
-      '#title' => t('Environment: @name', array('@name' => $environment['name'])),
+      '#title' => t('@name', array('@name' => $environment['name'])),
       '#href' => '',
       '#options' => array(
         'attributes' => array(
           'title' => t('Environments'),
+          'class' => array('toolbar-icon', 'toolbar-icon-environment'),
         ),
       ),
     ),
