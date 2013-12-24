@@ -78,7 +78,7 @@ function environment_indicator_menu() {
     'type' => MENU_LOCAL_TASK,
   );
   $items['admin/config/development/environment-indicator/add'] = array(
-    'route_name' => 'taxonomy_vocabulary_add',
+    'route_name' => 'environment_indicator_list',
     'type' => MENU_SIBLING_LOCAL_TASK,
   );
 
@@ -124,10 +124,15 @@ function environment_indicator_page_build(&$page) {
   if ($match = environment_indicator_get_active()) {
     if (environment_indicator_check_access($match)) {
       if (environment_indicator_needs_js()) {
-        drupal_add_js(array('environment_indicator' => array(
-          'toolbar-color' => $match['color'],
-          'environment-indicator-name' => theme('environment_indicator_indicator_name', $match),
-        )), 'setting');
+        $page['#attached']['js'][] = array(
+          'data' => array(
+            'environment_indicator' => array(
+              'toolbar-color' => $match['color'],
+              'environment-indicator-name' => theme('environment_indicator_indicator_name', $match),
+            )
+          ),
+          'type' => 'setting'
+        );
       }
       else if (!(module_exists('admin_menu') && user_access('access administration menu'))) {
         environment_indicator_attach_indicator($match, $page);

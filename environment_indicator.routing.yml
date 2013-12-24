@@ -1,33 +1,33 @@
 environment_indicator_list:
-  pattern: '/admin/config/development/environment-indicator'
+  path: '/admin/config/development/environment-indicator'
   defaults:
     _entity_list: 'environment_indicator'
   requirements:
     _permission: 'administer environment indicator settings'
 
 environment_indicator_delete:
-  pattern: '/admin/config/development/environment-indicator/manage/{environment_indicator}/delete'
+  path: '/admin/config/development/environment-indicator/manage/{environment_indicator}/delete'
   defaults:
     _entity_form: 'environment_indicator.delete'
   requirements:
     _entity_access: 'environment_indicator.delete'
 
 environment_indicator_update:
-  pattern: '/admin/config/development/environment-indicator/manage/{environment_indicator}'
+  path: '/admin/config/development/environment-indicator/manage/{environment_indicator}'
   defaults:
     _entity_form: 'environment_indicator'
   requirements:
     _entity_access: 'environment_indicator.update'
 
 environment_indicator_add:
-  pattern: '/admin/config/development/environment-indicator/add'
+  path: '/admin/config/development/environment-indicator/add'
   defaults:
     _entity_form: 'environment_indicator'
   requirements:
     _entity_create_access: 'environment_indicator'
 
 environment_indicator_settings:
-  pattern: '/admin/config/development/environment-indicator/settings'
+  path: '/admin/config/development/environment-indicator/settings'
   defaults:
     _form: '\Drupal\environment_indicator\Form\EnvironmentIndicatorSettingsForm'
   requirements:

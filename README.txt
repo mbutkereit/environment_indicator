@@ -23,7 +23,7 @@ Bug reports, feature suggestions and latest developments:
 
 -- CONFIGURATION --
 
-You may configure the environment at /admin/settings/environment-indicator
+You may configure the environment at /admin/config/development/environment-indicator
 
 You can also override settings in settings.php, allowing you to have different
 settings for each of your environments. If you choose to detect your environment using settings.php, then all configuration variables can be
