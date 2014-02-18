@@ -186,7 +186,10 @@ function environment_indicator_admin_menu_output_alter(&$content) {
     $content['environment_indicator'] = array(
       '#theme' => 'html_tag',
       '#tag' => 'div',
-      '#value' => theme('environment_indicator_indicator_name', $environment_info),
+      '#value' => array(
+        '#theme' => 'environment_indicator_indicator_name',
+        '#name' => $environment_info,
+      ),
       '#weight' => 50,
       '#attributes' => array(
         'id' => 'environment-indicator',

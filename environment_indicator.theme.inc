@@ -30,13 +30,14 @@ function theme_environment_indicator_indicator_name($variables) {
     }
   }
   if (!empty($items)) {
-    $switcher = theme('item_list', array(
-      'items' => $items,
-      'attributes' => array(
+    $switcher = array(
+      '#theme' => 'item_list',
+      '#items' => $items,
+      '#attributes' => array(
         'class' => array('environment-switcher-container'),
       ),
-    ));
-    $output .= $switcher;
+    );
+    $output .= drupal_render($switcher);
   }
   return $output;
 }
@@ -58,7 +59,10 @@ function theme_environment_indicator_indicator_bar($variables) {
       'style' => 'background-color: ' . $info['color'],
     ),
     'name' => array(
-      '#markup' => '<div class="gradient-bar">' . theme('environment_indicator_indicator_name', $info) . '</div>',
+      '#theme' => 'environment_indicator_indicator_name',
+      '#name' => $info,
+      '#prefix' => '<div class="gradient-bar">',
+      '#suffix' => '</div>',
     ),
   );
   return drupal_render($output);
