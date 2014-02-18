@@ -155,7 +155,7 @@ class EnvironmentIndicatorListController extends ConfigEntityListController impl
   public function submitForm(array &$form, array &$form_state) {
     $environments = $form_state['values']['environments'];
 
-    $entities = entity_load_multiple($this->entityType, array_keys($environments));
+    $entities = entity_load_multiple($this->entityTypeId, array_keys($environments));
     foreach ($environments as $id => $value) {
       if (isset($entities[$id]) && $value['weight'] != $entities[$id]->get('weight')) {
         // Update changed weight.
