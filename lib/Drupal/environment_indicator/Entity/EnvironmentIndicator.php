@@ -32,6 +32,11 @@ use Drupal\Core\Annotation\Translation;
  *     "id" = "machine",
  *     "label" = "human_name",
  *     "uuid" = "uuid"
+ *   },
+ *   links = {
+ *     "canonical" = "environment_indicator.update",
+ *     "delete-form" = "environment_indicator.delete",
+ *     "edit-form" = "environment_indicator.update"
  *   }
  * )
  */

@@ -116,9 +116,13 @@ class EnvironmentIndicatorListController extends ConfigEntityListController impl
       '#type' => 'table',
       '#header' => $this->buildHeader(),
       '#tabledrag' => array(
-        array('order', 'sibling', 'weight'),
+        array(
+          'action' => 'order',
+          'relationship' => 'sibling',
+          'group' => 'weight',
+        ),
       ),
-      '#attributes' => array(
+        '#attributes' => array(
         'id' => 'environment',
       ),
       '#empty' => t('No environments available. <a href="@link">Add environment indicator</a>.', array('@link' => url('admin/config/development/environment-indicator/add'))),

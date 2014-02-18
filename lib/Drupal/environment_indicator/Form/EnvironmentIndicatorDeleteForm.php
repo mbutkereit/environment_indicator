@@ -32,8 +32,11 @@ class EnvironmentIndicatorDeleteForm extends EntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function getCancelPath() {
-    return 'admin/config/development/environment-indicator';
+  public function getCancelRoute() {
+    return array(
+      'route_name' => 'environment_indicator.list',
+      'route_parameters' => array(),
+    );
   }
 
   /**

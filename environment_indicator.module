@@ -65,7 +65,7 @@ function environment_indicator_menu() {
   $items['admin/config/development/environment-indicator'] = array(
     'title' => 'Environment indicator',
     'description' => 'Configure the indicators for each environment.',
-    'route_name' => 'environment_indicator_list',
+    'route_name' => 'environment_indicator.list',
   );
   $items['admin/config/development/environment-indicator/list'] = array(
     'title' => 'List',
@@ -74,12 +74,26 @@ function environment_indicator_menu() {
   $items['admin/config/development/environment-indicator/settings'] = array(
     'title' => 'Settings',
     'descriptions' => 'Configure extra settings for the environment indicator.',
-    'route_name' => 'environment_indicator_settings',
+    'route_name' => 'environment_indicator.settings',
     'type' => MENU_LOCAL_TASK,
   );
   $items['admin/config/development/environment-indicator/add'] = array(
-    'route_name' => 'environment_indicator_list',
+    'route_name' => 'environment_indicator.list',
     'type' => MENU_SIBLING_LOCAL_TASK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_menu_link_defaults().
+ */
+function environment_indicator_menu_link_defaults() {
+  $items['environment_indicator.list'] = array(
+    'link_title' => 'Environment Indicators',
+    'parent' => 'system.admin.config.development',
+    'description' => 'Configure the indicators for each environment.',
+    'route_name' => 'environment_indicator.list',
   );
 
   return $items;
@@ -251,8 +265,8 @@ function environment_indicator_get_active() {
  *
  * @param string $regexurl
  *   The regular expression to match against.
- * @return
- *   Boolean indicating if the environment was a match.
+ * @return int
+ *   Indicating if the environment was a match.
  */
 function environment_indicator_match_path($regexurl) {
   // If the URL includes a non-scaped slash then an error will be thrown.
