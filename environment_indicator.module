@@ -142,7 +142,10 @@ function environment_indicator_page_build(&$page) {
           'data' => array(
             'environment_indicator' => array(
               'toolbar-color' => $match['color'],
-              'environment-indicator-name' => theme('environment_indicator_indicator_name', $match),
+              'environment-indicator-name' => array(
+                '#theme' => 'environment_indicator_indicator_name',
+                '#name' => $match,
+              )
             )
           ),
           'type' => 'setting'
