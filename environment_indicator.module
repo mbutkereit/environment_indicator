@@ -241,7 +241,7 @@ function environment_indicator_get_active() {
       );
     }
   }
-  uasort($matches, 'drupal_sort_weight');
+  uasort($matches, array('Drupal\Component\Utility\SortArray', 'sortByWeightElement'));
   $env = reset($matches);
   return $env;
 }

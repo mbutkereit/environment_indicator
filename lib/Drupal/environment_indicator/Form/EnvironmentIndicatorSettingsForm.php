@@ -6,11 +6,11 @@
  */
  
 namespace Drupal\environment_indicator\Form;
- 
-use Drupal\system\SystemConfigFormBase;
+
 use Drupal\Core\Form\FormInterface;
+use Drupal\Core\Form\ConfigFormBase;
  
-class EnvironmentIndicatorSettingsForm extends SystemConfigFormBase implements FormInterface {
+class EnvironmentIndicatorSettingsForm extends ConfigFormBase implements FormInterface {
  
   /**
    * Implements \Drupal\Core\Form\FormInterface::getFormID().
