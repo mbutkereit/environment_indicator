@@ -42,7 +42,7 @@ class EnvironmentIndicatorFormController extends EntityFormController {
       '#attached' => array(
         // Add Farbtastic color picker.
         'library' => array(
-          array('system', 'farbtastic'),
+          'core/jquery.farbtastic',
         ),
       ),
     );

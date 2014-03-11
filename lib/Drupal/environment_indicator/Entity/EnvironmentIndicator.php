@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\environment_indicator\Entity\EnvironmentIndicator.
@@ -14,10 +15,9 @@ use Drupal\Core\Annotation\Translation;
 /**
  * Defines a Environment configuration entity.
  *
- * @EntityType(
+ * @ConfigEntityType(
  *   id = "environment_indicator",
  *   label = @Translation("Environment Indicator"),
- *   module = "environment_indicator",
  *   controllers = {
  *     "storage" = "Drupal\Core\Config\Entity\ConfigStorageController",
  *     "access" = "Drupal\environment_indicator\EnvironmentIndicatorAccessController",
@@ -27,16 +27,17 @@ use Drupal\Core\Annotation\Translation;
  *       "delete" = "Drupal\environment_indicator\Form\EnvironmentIndicatorDeleteForm"
  *     }
  *   },
+ *   admin_permission = "administer environment indicator settings",
  *   config_prefix = "environment_indicator.environment",
  *   entity_keys = {
  *     "id" = "machine",
  *     "label" = "human_name",
- *     "uuid" = "uuid"
+ *     "weight" = "weight"
  *   },
  *   links = {
  *     "canonical" = "environment_indicator.update",
- *     "delete-form" = "environment_indicator.delete",
- *     "edit-form" = "environment_indicator.update"
+ *     "edit-form" = "environment_indicator.update",
+ *     "delete-form" = "environment_indicator.delete"
  *   }
  * )
  */
@@ -51,11 +52,6 @@ class EnvironmentIndicator extends ConfigEntityBase implements ConfigEntityInter
    * The human-readable label for the configurable.
    */
   public $name;
-
-  /**
-   * The universal unique identifier for the configurable.
-   */
-  public $uuid;
 
   /**
    * The regular expression to match against the URL.

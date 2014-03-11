@@ -34,29 +34,6 @@ function environment_indicator_help($path, $arg) {
 }
 
 /**
- * Implements hook_library_info().
- */
-function environment_indicator_library_info() {
-  // Declare the CSS and JS.
-  $path = drupal_get_path('module', 'environment_indicator');
-  $libraries['drupal.environment_indicator'] = array(
-    'title' => t('Environment Indicator'),
-    'version' => '1.0',
-    'js' => array(
-      $path . '/environment_indicator.js' => array(),
-      $path . '/color.js' => array(),
-    ),
-    'css' => array(
-      $path . '/environment_indicator.css' => array(),
-    ),
-    'dependencies' => array(
-      array('color', 'drupal.color'),
-    ),
-  );
-  return $libraries;
-}
-
-/**
  * Implement hook_menu().
  */
 function environment_indicator_menu() {
@@ -134,7 +111,7 @@ function environment_indicator_load($name) {
  * Implements hook_page_build().
  */
 function environment_indicator_page_build(&$page) {
-  $page['#attached']['library'][] = array('environment_indicator', 'drupal.environment_indicator');
+  $page['#attached']['library'][] = 'environment_indicator/drupal.environment_indicator';
   if ($match = environment_indicator_get_active()) {
     if (environment_indicator_check_access($match)) {
       if (environment_indicator_needs_js()) {

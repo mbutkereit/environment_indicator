@@ -1,0 +1,10 @@
+drupal.environment_indicator:
+  version: '2.0'
+  js:
+    environment_indicator.js: {}
+    color.js: {}
+  css:
+    component:
+      environment_indicator.css: {}
+  dependencies:
+    - color/drupal.color

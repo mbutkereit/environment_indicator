@@ -8,9 +8,8 @@ scripts:
   - environment_indicator.js
   - color.js
 
-files:
-  - plugins/ctools_export_ui_environment_indicator.class.php
-
 stylesheets:
   all:
     - environment_indicator.css
+
+configure: environment_indicator.list

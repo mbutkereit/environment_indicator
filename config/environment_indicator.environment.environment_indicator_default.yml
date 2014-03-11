@@ -1,9 +1,9 @@
 machine: environment_indicator_default
 description: 'Default environment.'
 name: 'Default environment'
-disabled: 0
+disabled: false
 color: '#A33'
 weight: 99
 position: top
-fixed: 0
+fixed: false
 regexurl: '.*'
