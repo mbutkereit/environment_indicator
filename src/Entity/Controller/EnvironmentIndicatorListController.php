@@ -5,16 +5,17 @@
  * Contains \Drupal\environment_indicator\EnvironmentIndicatorListController.
  */
 
-namespace Drupal\environment_indicator;
+namespace Drupal\environment_indicator\Entity\Controller;
 
-use Drupal\Core\Config\Entity\ConfigEntityListController;
+use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a listing of environments.
  */
-class EnvironmentIndicatorListController extends ConfigEntityListController implements FormInterface {
+class EnvironmentIndicatorListController extends ConfigEntityListBuilder implements FormInterface {
   /**
    * {@inheritdoc}
    */
@@ -40,40 +41,40 @@ class EnvironmentIndicatorListController extends ConfigEntityListController impl
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    $row = array();
+    $row = [];
 
     // Override default values to markup elements.
     $row['#attributes']['class'][] = 'draggable';
 
-    $row['name'] = array(
-      'data' => array('#markup' => $entity->get('name')),
-    );
-    $row['regexurl'] = array(
-      'data' => array('#markup' => $entity->get('regexurl')),
-    );
+    $row['name'] = [
+      'data' => ['#markup' => $entity->get('name')],
+    ];
+    $row['regexurl'] = [
+      'data' => ['#markup' => $entity->get('regexurl')],
+    ];
     $row['#weight'] = $entity->get('weight');
 
     // Add weight column.
-    $row['weight'] = array(
+    $row['weight'] = [
       '#type' => 'weight',
-      '#title' => t('Weight for @title', array('@title' => $entity->label())),
+      '#title' => t('Weight for @title', ['@title' => $entity->label()]),
       '#title_display' => 'invisible',
       '#default_value' => $entity->get('weight'),
-      '#attributes' => array('class' => array('weight')),
-    );
+      '#attributes' => ['class' => ['weight']],
+    ];
 
     // Add color column.
-    $row['color'] = array(
-      'data' => array(
+    $row['color'] = [
+      'data' => [
         '#type' => 'html_tag',
         '#tag' => 'pre',
         '#value' => $entity->get('color'),
-        '#attributes' => array(
-          'class' => array('environment-indicator-color'),
+        '#attributes' => [
+          'class' => ['environment-indicator-color'],
           'style' => 'border: 3px solid ' . $entity->get('color') . ';',
-        ),
-      )
-    );
+        ],
+      ]
+    ];
     $row += parent::buildRow($entity);
     unset($row['id']);
     unset($row['label']);
@@ -92,12 +93,12 @@ class EnvironmentIndicatorListController extends ConfigEntityListController impl
     }
     $header = $this->buildHeader();
     unset($header['weight']);
-    $build = array(
+    $build = [
       '#theme' => 'table',
       '#header' => $header,
-      '#rows' => array(),
-      '#empty' => t('No environments available. <a href="@link">Add environment indicator</a>.', array('@link' => url('admin/config/development/environment-indicator/add'))),
-    );
+      '#rows' => [],
+      '#empty' => t('No environments available. <a href="@link">Add environment indicator</a>.', ['@link' => \Drupal::url('environment_indicator.add')]),
+    ];
     foreach ($entities as $entity) {
       $row = $this->buildRow($entity);
       unset($row['#weight']);
@@ -111,33 +112,33 @@ class EnvironmentIndicatorListController extends ConfigEntityListController impl
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, array &$form_state) {
-    $form['environments'] = array(
+  public function buildForm(array $form,  FormStateInterface $form_state) {
+    $form['environments'] = [
       '#type' => 'table',
       '#header' => $this->buildHeader(),
-      '#tabledrag' => array(
-        array(
+      '#tabledrag' => [
+        [
           'action' => 'order',
           'relationship' => 'sibling',
           'group' => 'weight',
-        ),
-      ),
-        '#attributes' => array(
+        ],
+      ],
+        '#attributes' => [
         'id' => 'environment',
-      ),
-      '#empty' => t('No environments available. <a href="@link">Add environment indicator</a>.', array('@link' => url('admin/config/development/environment-indicator/add'))),
-    );
+      ],
+      '#empty' => t('No environments available. <a href="@link">Add environment indicator</a>.', ['@link' => url('admin/config/development/environment-indicator/add')]),
+    ];
 
     foreach ($this->load() as $entity) {
       $form['environments'][$entity->id()] = $this->buildRow($entity);
     }
 
     $form['actions']['#type'] = 'actions';
-    $form['actions']['submit'] = array(
+    $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => t('Save'),
       '#button_type' => 'primary',
-    );
+    ];
 
     return $form;
   }
@@ -145,17 +146,18 @@ class EnvironmentIndicatorListController extends ConfigEntityListController impl
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, array &$form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state) {
     // No validation.
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, array &$form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $environments = $form_state['values']['environments'];
 
-    $entities = entity_load_multiple($this->entityTypeId, array_keys($environments));
+    $controller = \Drupal::entityManager()->getStorage($this->entityTypeId);
+    $entities = $controller->loadMultiple(array_keys($environments));
     foreach ($environments as $id => $value) {
       if (isset($entities[$id]) && $value['weight'] != $entities[$id]->get('weight')) {
         // Update changed weight.

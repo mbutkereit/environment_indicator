@@ -5,10 +5,11 @@
  * Contains \Drupal\environment_indicator\Form\EnvironmentIndicatorDeleteForm.
  */
 
-namespace Drupal\environment_indicator\Form;
+namespace Drupal\environment_indicator\Entity\Form;
 
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a deletion confirmation form for environment_indicator environment.
@@ -26,17 +27,17 @@ class EnvironmentIndicatorDeleteForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return t('Are you sure you want to delete the environment indicator %title?', array('%title' => $this->entity->label()));
+    return t('Are you sure you want to delete the environment indicator %title?', ['%title' => $this->entity->label()]);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCancelRoute() {
-    return array(
+    return [
       'route_name' => 'environment_indicator.list',
-      'route_parameters' => array(),
-    );
+      'route_parameters' => [],
+    ];
   }
 
   /**
@@ -56,12 +57,18 @@ class EnvironmentIndicatorDeleteForm extends EntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submit(array $form, array &$form_state) {
+  public function submit(array $form, FormStateInterface $form_state) {
     $this->entity->delete();
-    drupal_set_message(t('Deleted environment %name.', array('%name' => $this->entity->label())));
-    watchdog('environment', 'Deleted environment %name.', array('%name' => $this->entity->label()), WATCHDOG_NOTICE);
-    $form_state['redirect'] = 'admin/config/development/environment-indicator';
-    Cache::invalidateTags(array('content' => TRUE));
+    drupal_set_message(t('Deleted environment %name.', ['%name' => $this->entity->label()]));
+    watchdog('environment', 'Deleted environment %name.', ['%name' => $this->entity->label()], WATCHDOG_NOTICE);
+    $form_state->setRedirect('environment_indicator.list');
+    Cache::invalidateTags(['content' => TRUE]);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getCancelUrl() {
+    return t('Delete');
+  }
 }

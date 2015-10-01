@@ -1,72 +1,80 @@
 <?php
-namespace Drupal\environment_indicator;
+namespace Drupal\environment_indicator\Entity\Form;
 
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityFormController;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityForm;
 
-class EnvironmentIndicatorFormController extends EntityFormController {
+class EnvironmentIndicatorForm extends EntityForm{
   /**
    * This actually builds your form.
    */
-  public function form(array $form, array &$form_state) {
-    $environment_indicator = $this->entity;
+  public function form(array $form, FormStateInterface $form_state) {
+    $environment_indicator = $this->getEntity();
+    $form = parent::form($form, $form_state);
 
-    $form['name'] = array(
+    $form['name'] = [
       '#type' => 'textfield',
       '#title' => t('Name'),
       '#default_value' => $environment_indicator->label(),
-    );
-    $form['machine'] = array(
+    ];
+    $form['machine'] = [
       '#type' => 'machine_name',
-      '#machine_name' => array(
-        'source' => array('name'),
+      '#machine_name' => [
+        'source' => ['name'],
         'exists' => 'environment_indicator_load',
-      ),
+      ],
       '#default_value' => $environment_indicator->id(),
       '#disabled' => !empty($environment_indicator->machine),
-    );
-    $form['regexurl'] = array(
+    ];
+    $form['regexurl'] = [
       '#type' => 'textfield',
       '#title' => t('Hostname'),
       '#description' => t('The hostname you want to detect. You can use a regular expression in this field. This regular expression will be run against the current URL to determine wether the environment is active or not. If you use a regular expression here this environment will <strong>not be availabe</strong> for environment switch.'),
       '#default_value' => $environment_indicator->regexurl,
-    );
-    $form['color_picker'] = array(
+    ];
+    $form['color_picker'] = [
       '#markup' => '<div id="environment-indicator-color-picker"></div>',
-    );
-    $form['color'] = array(
+    ];
+    $form['color'] = [
       '#type' => 'textfield',
       '#title' => t('Color'),
       '#description' => t('Color for the indicator. Ex: #D0D0D0.'),
       '#default_value' => $environment_indicator->color ?: '#D0D0D0',
-      '#attached' => array(
+      '#attached' => [
         // Add Farbtastic color picker.
-        'library' => array(
+        'library' => [
           'core/jquery.farbtastic',
-        ),
-      ),
-    );
-    $form['help'] = array(
+        ],
+      ],
+    ];
+    $form['help'] = [
       '#markup' => t('You don\'t need to care about position and fixed if you are using the toolbar. If you use the toolbar module, then the environment indicator will be integrated.'),
-    );
-    $form['position'] = array(
+    ];
+    $form['position'] = [
       '#title' => t('Position'),
       '#descripyion' => t('Wether you want the indicator at the top or at the bottom.'),
       '#type' => 'radios',
-      '#options' => array(
+      '#options' => [
         'top' => t('Top'),
         'bottom' => t('Bottom'),
-      ),
+      ],
       '#default_value' => $environment_indicator->position,
-    );
-    $form['fixed'] = array(
+    ];
+    $form['fixed'] = [
       '#title' => t('Fixed'),
       '#descripyion' => t('Check this if you want the indicator to be positioned fixed.'),
       '#type' => 'checkbox',
       '#default_value' => $environment_indicator->fixed,
-    );
+    ];
 
     return $form;
+  }
+
+  public function submit(array $form, FormStateInterface $form_state) {
+    // Build the entity object from the submitted values.
+    $entity = parent::submit($form, $form_state);
+
+    return $entity;
   }
 
   /**
@@ -75,14 +83,15 @@ class EnvironmentIndicatorFormController extends EntityFormController {
    * There will eventually be default code to rely on here, but it doesn't exist
    * yet.
    */
-  public function save(array $form, array &$form_state) {
-    $environment = $this->getEntity($form_state);
-    $environment->save();
-    drupal_set_message(t('Saved the %label environment.', array(
-      '%label' => $environment->label(),
-    )));
+  public function save(array $form, FormStateInterface $form_state) {
+    $environment = $this->entity;
 
-    $form_state['redirect'] = 'admin/config/development/environment-indicator';
+    $environment->save();
+    drupal_set_message(t('Saved the %label environment.', [
+      '%label' => $environment->label(),
+    ]));
+
+    $form_state->setRedirect('environment_indicator.list');
   }
 
   /**
@@ -91,15 +100,16 @@ class EnvironmentIndicatorFormController extends EntityFormController {
    * There will eventually be default code to rely on here, but it doesn't exist
    * yet.
    */
-  public function delete(array $form, array &$form_state) {
-    $destination = array();
+  public function delete(array $form, FormStateInterface $form_state) {
+    $destination = [];
     if (isset($_GET['destination'])) {
       $destination = drupal_get_destination();
       unset($_GET['destination']);
     }
 
-    $entity = $this->getEntity($form_state);
-    $form_state['redirect'] = array('admin/config/development/environment-indicator/manage/' . $entity->id() . '/delete', array('query' => $destination));
+    $entity = $this->getEntity();
+    //@todo fix it
+    $form_state->setFormstate(['admin/config/development/environment-indicator/manage/' . $entity->id() . '/delete', ['query' => $destination]]);
   }
 
 }

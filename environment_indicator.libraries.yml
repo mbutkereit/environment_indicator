@@ -1,10 +1,10 @@
 drupal.environment_indicator:
   version: '2.0'
   js:
-    environment_indicator.js: {}
-    color.js: {}
+    js/environment_indicator.js: {}
+    js/color.js: {}
   css:
     component:
-      environment_indicator.css: {}
+      css/environment_indicator.css: {}
   dependencies:
     - color/drupal.color

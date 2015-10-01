@@ -14,29 +14,29 @@ function theme_environment_indicator_indicator_name($variables) {
   $active_environment = environment_indicator_get_active();
   foreach ($environments as $machine => $environment) {
     if ($machine != $active_environment['machine']) {
-      $items[] = array(
-        'link' => array(
+      $items[] = [
+        'link' => [
           '#type' => 'link',
-          '#title' => t('Open in %name', array('%name' => t($environment->label()))),
-          '#href' => 'http://' . $environment->get('regexurl') . '/' . current_path(),
-          '#options' => array(
+          '#title' => t('Open in %name', ['%name' => t($environment->label())]),
+          '#href' => 'http://' . $environment->get('regexurl') . '/' . \Drupal::request()->getRequestUri(),
+          '#options' => [
             'html' => TRUE,
-          ),
-        ),
-        '#wrapper_attributes' => array(
-          'class' => array('environment-switcher')
-        ),
-      );
+          ],
+        ],
+        '#wrapper_attributes' => [
+          'class' => ['environment-switcher']
+        ],
+      ];
     }
   }
   if (!empty($items)) {
-    $switcher = array(
+    $switcher = [
       '#theme' => 'item_list',
       '#items' => $items,
-      '#attributes' => array(
-        'class' => array('environment-switcher-container'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['environment-switcher-container'],
+      ],
+    ];
     $output .= drupal_render($switcher);
   }
   return $output;
@@ -47,23 +47,23 @@ function theme_environment_indicator_indicator_name($variables) {
  */
 function theme_environment_indicator_indicator_bar($variables) {
   $info = $variables['info'];
-  $output = array(
+  $output = [
     '#type' => 'container',
-    '#attributes' => array(
-      'class' => array(
+    '#attributes' => [
+      'class' => [
         drupal_html_class('environment-indicator-' . $info['machine']),
         'position-' . $info['position'],
         'fixed-' . ($info['fixed'] ? 'yes' : 'no'),
-      ),
+      ],
       'id' => 'environment-indicator',
       'style' => 'background-color: ' . $info['color'],
-    ),
-    'name' => array(
+    ],
+    'name' => [
       '#theme' => 'environment_indicator_indicator_name',
       '#name' => $info,
       '#prefix' => '<div class="gradient-bar">',
       '#suffix' => '</div>',
-    ),
-  );
+    ],
+  ];
   return drupal_render($output);
 }
