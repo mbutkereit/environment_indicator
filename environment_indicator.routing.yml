@@ -33,3 +33,17 @@ environment_indicator.settings:
     _form: '\Drupal\environment_indicator\Form\EnvironmentIndicatorSettingsForm'
   requirements:
     _permission: 'administer environment indicator settings'
+
+entity.environment_indicator.edit_form:
+  path: '/admin/environment_indicator/update'
+  defaults:
+    _entity_form: 'environment_indicator.default'
+  requirements:
+    _permission: 'administer content types'
+
+entity.environment_indicator.delete_form:
+  path: '/admin/environment_indicator/delete'
+  defaults:
+    _entity_form: 'environment_indicator.delete'
+  requirements:
+    _permission: 'administer content types'

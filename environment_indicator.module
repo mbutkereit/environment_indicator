@@ -4,6 +4,7 @@
  * @file
  * Module implementation file.
  */
+use Drupal\Core\Url;
 
 /**
  * Implement hook_help().
@@ -46,61 +47,14 @@ function environment_indicator_load($name) {
  * Implements hook_page_build().
  */
 function environment_indicator_page_attachments(&$page) {
+ $manager = \Drupal::getContainer()->get('environment_indicator.manager');
   $page['#attached']['library'][] = 'environment_indicator/drupal.environment_indicator';
-  if ($match = environment_indicator_get_active()) {
-    if (environment_indicator_check_access($match)) {
-      if (environment_indicator_needs_js()) {
-$page['#attached']['drupalSettings']['environment_indicator']['toolbar-color'] = $match['color'];
-        $page['#attached']['drupalSettings']['environment_indicator']['environment-indicator-name'] = [
-          '#theme' => 'environment_indicator_indicator_name',
-          '#name' => $match,
-        ];
-      }
-      else if (!(\Drupal::moduleHandler()->moduleExists('admin_menu') && \Drupal::currentUser()->hasPermission('access administration menu'))) {
-        environment_indicator_attach_indicator($match, $page);
+  if ($match = $manager->getActiveIndicator()) {
+    if ($manager->environment_indicator_check_access($match)) {
+      if ($manager->environment_indicator_needs_js()) {
+        $page['#attached']['drupalSettings']['environment_indicator']['toolbar-color'] = $match->getColor();
       }
     }
-  }
-}
-
-/**
- * Implements hook_theme().
- */
-function environment_indicator_theme($existing, $type, $theme, $path) {
-  return [
-    'environment_indicator_indicator_name' => [
-      'variables' => ['name' => NULL],
-      'file' => 'environment_indicator.theme.inc',
-    ],
-    'environment_indicator_indicator_bar' => [
-      'variables' => ['info' => NULL],
-      'file' => 'environment_indicator.theme.inc',
-    ],
-    'environment_indicator_overritten_header' => [
-      'file' => 'environment_indicator.theme.inc',
-    ],
-  ];
-}
-
-/**
- * Implements hook_admin_menu_output_alter().
- */
-function environment_indicator_admin_menu_output_alter(&$content) {
-  $environment_info = environment_indicator_get_active();
-  if (!empty($environment_info)) {
-    $content['environment_indicator'] = [
-      '#theme' => 'html_tag',
-      '#tag' => 'div',
-      '#value' => [
-        '#theme' => 'environment_indicator_indicator_name',
-        '#name' => $environment_info,
-      ],
-      '#weight' => 50,
-      '#attributes' => [
-        'id' => 'environment-indicator',
-        'style' => 'background-color: ' . $environment_info['color'],
-      ],
-    ];
   }
 }
 
@@ -108,193 +62,37 @@ function environment_indicator_admin_menu_output_alter(&$content) {
  * Implements hook_toolbar().
  */
 function environment_indicator_toolbar() {
-  $environment = environment_indicator_get_active();
-  $menu = _environment_indicator_switcher_menu();
   $items = array();
+  $manager = \Drupal::getContainer()->get('environment_indicator.manager');
+  $environment_info = $manager->getActiveIndicator();
+  if (!empty($environment_info)) {
+      $shortcut_set = shortcut_current_displayed_set();
+        $items['environment_indicator'] = [
+          '#type' => 'toolbar_item',
+          'tab' => [
+            '#type' => 'link',
+            '#title' => $environment_info->label(),
+            '#url' => $shortcut_set->urlInfo('collection'),
+            '#attributes' => [
+              'title' => $environment_info->label(),
+              'class' => ['toolbar-icon', 'toolbar-icon-environment'],
+            ],
 
-  $items['environment_indicator'] = [
-    // Include the toolbar_tab_wrapper to style the link like a toolbar tab.
-    // Exclude the theme wrapper if custom styling is desired.
-    '#type' => 'toolbar_item',
-    'tab' => [
-      '#type' => 'link',
-      '#theme' => 'user_message_toolbar_tab',
-      '#title' => t('@name', ['@name' => $environment['label']]),
-      '#href' => 'www.google.de',
-      '#options' => [
-        'attributes' => [
-          'title' => t('Environments'),
-          'class' => ['toolbar-icon', 'toolbar-icon-environment'],
-        ],
-      ],
-    ],
-    'tray' => $menu,
-    '#weight' => -25,
-  ];
-
+          ],
+          'tray' => [
+            '#heading' => t('User-defined Environments'),
+            'shortcuts' => [],
+            'configure' => [
+              '#type' => 'link',
+              '#title' => t('Add Environmen Indicator'),
+              '#url' => Url::fromRoute('environment_indicator.list'),
+              '#options' => ['attributes' => ['class' => ['edit-environment-indicator']]],
+            ],
+          ],
+          '#weight' => -10,
+          '#attached' =>['library'=>['environment_indicator/drupal.environment_indicator']],
+        ];
+      }
   return $items;
 }
 
-/**
- * Helper function to attach the indicator to the page.
- */
-function environment_indicator_attach_indicator($environment_info, &$page) {
-  $page['page_' . $environment_info['position']]['environment_indicator'] = [
-    '#theme' => 'environment_indicator_indicator_bar',
-    '#info' => $environment_info,
-  ];
-}
-
-/**
- * Helper function to get the active indicator.
- */
-function environment_indicator_get_active() {
-  $env = &drupal_static(__FUNCTION__);
-  if (isset($env)) {
-    return $env;
-  }
-  $environments = environment_indicator_get_all();
-  $matches = array();
-  foreach ($environments as $machine => $environment) {
-    // Check if the environment record has ben disabled. Then check the regex.
-    if (environment_indicator_match_path($environment->regexurl)) {
-      $matches[] = [
-        'label' => $environment->label,
-        'id' => $environment->id,
-        'weight' => $environment->weight,
-        'color' => $environment->color,
-        'position' => $environment->position,
-        'fixed' => $environment->fixed,
-      ];
-    }
-  }
-  uasort($matches, array('Drupal\Component\Utility\SortArray', 'sortByWeightElement'));
-  $env = reset($matches);
-  return $env;
-}
-
-/**
- * Helper function to match the path based on the regular expression.
- *
- * @param string $regexurl
- *   The regular expression to match against.
- * @return int
- *   Indicating if the environment was a match.
- */
-function environment_indicator_match_path($regexurl) {
-  // If the URL includes a non-scaped slash then an error will be thrown.
-  $regexurl = preg_replace("/([^\/])\//", "$1\/", $regexurl);
-  return preg_match("/$regexurl/", $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-}
-
-/**
- * Helper function to get all environments.
- *
- * @param bool $fixed
- *   If TRUE it will only return fixed environments. Fixed environments are
- *   those that do not use a regular expression for detection.
- */
-function environment_indicator_get_all($fixed = FALSE) {
-  $environments = entity_load_multiple('environment_indicator');
-  $environments = array_filter($environments, '_environment_indicator_active');
-  // Check if the regular expression is a environment name.
-  return $fixed ? array_filter($environments, '_environment_indicator_regex_filter') : $environments;
-}
-
-/**
- * Helper function to check access to show the indicator.
- *
- * @param array
- *   The environment info array.
- * @return boolean
- *   TRUE if the user can see the indicator.
- */
-function environment_indicator_check_access($environment_info) {
-  // Do not show the indicator on select pages.
-  $supress_pages = \Drupal::config('environment_indicator.options')->get('suppress_pages');
-  // Compare with the internal and path alias (if any).
-  $current_path = \Drupal::request()->getRequestUri();
-  $page_match = \Drupal::service('path.matcher')->matchPath($current_path, $supress_pages);
-  if ($page_match) {
-    return FALSE;
-  }
-
-  return \Drupal::currentUser()->hasPermission('access environment indicator') || \Drupal::currentUser()->hasPermission('access environment indicator ' . $environment_info['id']);
-}
-
-/**
- * Helper function to check if the JS needs to be included.
- *
- * @return boolean
- *   TRUE if the extra javascript is needed.
- */
-function environment_indicator_needs_js() {
-  return \Drupal::moduleHandler()->moduleExists('toolbar') && \Drupal::currentUser()->hasPermission('access toolbar');
-}
-
-/**
- * Filter callback
- */
-function _environment_indicator_regex_filter($item) {
-  return !preg_match("/[\*\?\[\]\(\)]/", $item->regexurl);
-}
-
-/**
- * Helper function to generate a menu with the environments to switch to.
- */
-function _environment_indicator_switcher_menu() {
-  $element = [
-    '#heading' => t('Environment indicator'),
-    'toolbar_indicators' => [
-      '#type' => 'container',
-      '#attributes' => [
-        'class' => ['toolbar-menu-environment-indicator'],
-      ],
-      'indicator_menu' => [
-        '#sorted' => TRUE,
-        '#theme_wrappers' => ['menu_tree'],
-      ],
-    ],
-  ];
-  $environments = environment_indicator_get_all(TRUE);
-  if (empty($environments)) {
-    $element['toolbar_indicators']['indicator_menu']['empty'] = [
-      '#theme' => 'menu_link',
-      '#title' => '- ' . t('There are no other environments available.') . ' -',
-      '#href' => \Drupal::request()->getRequestUri(),
-      '#localized_options' => [
-        'html' => TRUE,
-      ],
-      '#below' => [],
-      '#attributes' => [
-        'class' => ['leaf'],
-      ],
-    ];
-  }
-  $current_environment = environment_indicator_get_active();
-  foreach ($environments as $id => $environment) {
-    if ($id != $current_environment['id']) {
-      $element['toolbar_indicators']['indicator_menu'][$environment->id()] = array(
-        '#theme' => 'menu_link',
-        '#title' => t('Open in: %name', array('%name' => $environment->label())),
-        '#href' => 'http://' . $environment->get('regexurl') . '/' . \Drupal::request()->getRequestUri(),
-        '#localized_options' => array(
-          'html' => TRUE,
-        ),
-        '#below' => array(),
-        '#attributes' => array(
-          'class' => array('leaf'),
-        ),
-      );
-    }
-  }
-  return $element;
-}
-
-/**
- * Filter callback
- */
-function _environment_indicator_active($item) {
-  // TODO: Implement an action for the configuration entity to disable it.
-  return TRUE;
-}

@@ -1,0 +1,3 @@
+services:
+  environment_indicator.manager:
+    class: Drupal\environment_indicator\EnvironmentManager

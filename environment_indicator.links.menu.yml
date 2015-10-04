@@ -1,0 +1,6 @@
+environment_indicator.performance_settings:
+  title: 'Environment Indicator'
+  parent: system.admin_config_development
+  description: 'Administer environment indicators.'
+  route_name: environment_indicator.list
+  weight: -21

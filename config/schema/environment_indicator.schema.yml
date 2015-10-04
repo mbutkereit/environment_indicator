@@ -1,6 +1,6 @@
 # Schema for the configuration files of the Block module.
 
-environment_indicator.environment_indicator.environment.*:
+environment_indicator.environment_indicator.*:
   type: config_entity
   label: 'Environment Indicator'
   mapping:
@@ -9,25 +9,25 @@ environment_indicator.environment_indicator.environment.*:
       label: 'ID'
     label:
       type: string
-      label: 'Theme'
+      label: 'Label'
     weight:
       type: integer
       label: 'Weight'
     regexurl:
       type: string
-      label: 'Weight'
+      label: 'RegexURL'
     color:
       type: string
-      label: 'Weight'
+      label: 'Color'
     position:
       type: string
-      label: 'Weight'
+      label: 'Position'
     fixed:
       type: boolean
       label: 'Weight'
     disabled:
       type: boolean
-      label: 'Weight'
+      label: 'fixed'
 
-environment_indicator.settings.*:
-  type: environment_indicator_settings
+#environment_indicator.settings.*:
+ # type: environment_indicator_settings

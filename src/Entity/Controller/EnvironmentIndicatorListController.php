@@ -47,7 +47,7 @@ class EnvironmentIndicatorListController extends ConfigEntityListBuilder impleme
     $row['#attributes']['class'][] = 'draggable';
 
     $row['name'] = [
-      'data' => ['#markup' => $entity->get('name')],
+      'data' => ['#markup' => $entity->get('label')],
     ];
     $row['regexurl'] = [
       'data' => ['#markup' => $entity->get('regexurl')],
@@ -86,11 +86,6 @@ class EnvironmentIndicatorListController extends ConfigEntityListBuilder impleme
    */
   public function render() {
     $entities = $this->load();
-    if (count($entities) > 1) {
-      // Creates a form for manipulating environment weights if more than one
-      // environment exists.
-      return drupal_get_form($this);
-    }
     $header = $this->buildHeader();
     unset($header['weight']);
     $build = [

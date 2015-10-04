@@ -12,19 +12,19 @@ class EnvironmentIndicatorForm extends EntityForm{
     $environment_indicator = $this->getEntity();
     $form = parent::form($form, $form_state);
 
-    $form['name'] = [
+    $form['label'] = [
       '#type' => 'textfield',
       '#title' => t('Name'),
       '#default_value' => $environment_indicator->label(),
     ];
-    $form['machine'] = [
+    $form['id'] = [
       '#type' => 'machine_name',
       '#machine_name' => [
-        'source' => ['name'],
+        'source' => ['label'],
         'exists' => 'environment_indicator_load',
       ],
       '#default_value' => $environment_indicator->id(),
-      '#disabled' => !empty($environment_indicator->machine),
+      '#disabled' => !empty($environment_indicator->id),
     ];
     $form['regexurl'] = [
       '#type' => 'textfield',
@@ -85,7 +85,6 @@ class EnvironmentIndicatorForm extends EntityForm{
    */
   public function save(array $form, FormStateInterface $form_state) {
     $environment = $this->entity;
-
     $environment->save();
     drupal_set_message(t('Saved the %label environment.', [
       '%label' => $environment->label(),

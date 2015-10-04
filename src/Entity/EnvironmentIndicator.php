@@ -28,7 +28,6 @@ use Drupal\environment_indicator\EnvironmentIndicatorInterface;
  *     }
  *   },
  *   admin_permission = "administer environment indicator settings",
- *   config_prefix = "environment_indicator.environment",
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",
@@ -42,6 +41,10 @@ use Drupal\environment_indicator\EnvironmentIndicatorInterface;
  *   config_export = {
  *     "id",
  *     "label",
+ *     "regexurl",
+ *     "position",
+ *     "fixed",
+ *     "disabled",
  *     "weight",
  *     "color",
  *   }
@@ -129,7 +132,7 @@ class EnvironmentIndicator extends ConfigEntityBase implements EnvironmentIndica
   }
 
   public function getColor() {
-    // TODO: Implement getColor() method.
+    return $this->color;
   }
 
   public function setColor($hex) {

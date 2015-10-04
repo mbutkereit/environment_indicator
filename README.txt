@@ -33,21 +33,21 @@ overridden in settings.php, but the most common three are:
       A boolean value indicating whether the Environment Indicator should use
       the settings.php variables for the indicator. On your production
       environment, you should probably set this to FALSE. e.g:
-      $conf['environment_indicator_overwrite'] = FALSE
+      $settings['environment_indicator_overwrite'] = FALSE
   - environment_indicator_overwritten_name
       The text that will be displayed on the indicator. e.g:
-      $conf['environment_indicator_overwritten_name'] = 'Staging'
+      $settings['environment_indicator_overwritten_name'] = 'Staging'
   - environment_indicator_overwritten_color
       A valid css color. e.g:
-      $conf['environment_indicator_overwritten_color'] = '#F55'
+      $settings['environment_indicator_overwritten_color'] = '#F55'
   - environment_indicator_overwritten_position
       Where your indicator may appear. Allowed values are "top" and "bottom".
       e.g:
-      $conf['environment_indicator_overwritten_position'] = 'top'
+      $settings['environment_indicator_overwritten_position'] = 'top'
   - environment_indicator_overwritten_fixed
       A boolean value indicating whether the Environment Indicator should be
       fixed at the top/bottom of the screen. e.g:
-      $conf['environment_indicator_overwritten_fixed'] = FALSE
+      $settings['environment_indicator_overwritten_fixed'] = FALSE
 
 -- CONTACT --
 
