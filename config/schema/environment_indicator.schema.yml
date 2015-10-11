@@ -1,4 +1,4 @@
-# Schema for the configuration files of the Block module.
+# Schema for the configuration files of the environmen_indicator module.
 
 environment_indicator.environment_indicator.*:
   type: config_entity
@@ -28,6 +28,3 @@ environment_indicator.environment_indicator.*:
     disabled:
       type: boolean
       label: 'fixed'
-
-#environment_indicator.settings.*:
- # type: environment_indicator_settings

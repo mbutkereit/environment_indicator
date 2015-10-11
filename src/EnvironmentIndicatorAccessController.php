@@ -24,14 +24,14 @@ class EnvironmentIndicatorAccessController extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, $langcode, AccountInterface $account) {
-    return AccessResult::allowedIfHasPermission($account,'administer environment indicator settings');
+    return AccessResult::allowedIfHasPermission($account, 'administer environment indicator settings');
   }
 
   /**
    * {@inheritdoc}
    */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
-    return AccessResult::allowedIfHasPermission($account,'administer environment indicator settings');
+    return AccessResult::allowedIfHasPermission($account, 'administer environment indicator settings');
   }
 
 }

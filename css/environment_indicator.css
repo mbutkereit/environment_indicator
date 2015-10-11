@@ -97,17 +97,20 @@ div#toolbar-administration div.toolbar-menu { padding: 5px 20px 5px 10px; }
   background-color: #EDEDE0;
 }
 
+.toolbar .toolbar-tray-horizontal .edit-environment-indicator{
+    float:right;
+}
 .toolbar-bar .toolbar-icon-environment:before {
-  background-image: url("images/env-bebebe.svg");
+  background-image: url("../images/env-bebebe.svg");
 }
 .no-svg .toolbar-bar .toolbar-icon-environment:before {
-  background-image: url("images/env-bebebe.png");
+  background-image: url("../images/env-bebebe.png");
 }
 .toolbar-bar .toolbar-icon-environment:active:before,
 .toolbar-bar .toolbar-icon-environment.active:before {
-  background-image: url("images/env-ffffff.svg");
+  background-image: url("../images/env-ffffff.svg");
 }
 .no-svg .toolbar-bar .toolbar-icon-environment:active:before,
 .no-svg .toolbar-bar .toolbar-icon-environment.active:before {
-  background-image: url("images/env-ffffff.png");
+  background-image: url("../images/env-ffffff.png");
 }

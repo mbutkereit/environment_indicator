@@ -16,6 +16,7 @@ use Drupal\Core\Form\FormStateInterface;
  * Provides a listing of environments.
  */
 class EnvironmentIndicatorListController extends ConfigEntityListBuilder implements FormInterface {
+
   /**
    * {@inheritdoc}
    */
@@ -107,7 +108,7 @@ class EnvironmentIndicatorListController extends ConfigEntityListBuilder impleme
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form,  FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $form['environments'] = [
       '#type' => 'table',
       '#header' => $this->buildHeader(),
@@ -118,7 +119,7 @@ class EnvironmentIndicatorListController extends ConfigEntityListBuilder impleme
           'group' => 'weight',
         ],
       ],
-        '#attributes' => [
+      '#attributes' => [
         'id' => 'environment',
       ],
       '#empty' => t('No environments available. <a href="@link">Add environment indicator</a>.', ['@link' => url('admin/config/development/environment-indicator/add')]),

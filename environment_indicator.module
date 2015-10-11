@@ -4,30 +4,31 @@
  * @file
  * Module implementation file.
  */
+
 use Drupal\Core\Url;
 
 /**
- * Implement hook_help().
+ * Implements hook_help().
  */
 function environment_indicator_help($route_name, \Drupal\Core\Routing\RouteMatchInterface $route_match) {
   switch ($route_name) {
     case 'admin/config/development/environment-indicator':
-      return t('The Environment Indicator adds a coloured strip to the site informing you which environment you\'re currently in (Development, Staging Production etc). You may override these settings by adding a new environment based on the hostname being seen or with your settings.php file in each of your environments.');
+      return t("The Environment Indicator adds a coloured strip to the site informing you which environment you\'re currently in (Development, Staging Production etc). You may override these settings by adding a new environment based on the hostname being seen or with your settings.php file in each of your environments.");
 
     case 'admin/help#environment_indicator':
-      $output = '<p>' .t('The Environment Indicator adds a coloured strip to the site informing you which environment you\'re currently in (Development, Staging Production etc') .'</p>';
+      $output = '<p>' . t("The Environment Indicator adds a coloured strip to the site informing you which environment you\'re currently in (Development, Staging Production etc") . '</p>';
 
-      $output .= '<p>'. t('The Environment Indicator <a href="@settings">settings page</a> allows you to modify some elements of the indicator\'s behavior and appearance. Since the appearance of the indicator is dependent on your site theme, substantial customisations require modifications to your site\'s theme and CSS files.', ['@settings' => url('admin/config/development/environment-indicator')]) . '</p>';
+      $output .= '<p>' . t('The Environment Indicator <a href="@settings">settings page</a> allows you to modify some elements of the indicator\'s behavior and appearance. Since the appearance of the indicator is dependent on your site theme, substantial customisations require modifications to your site\'s theme and CSS files.', ['@settings' => url('admin/config/development/environment-indicator')]) . '</p>';
 
-      $output .= '<p>'. t('The Environment Indicator\'s visibility depends upon the permissions of the viewer. The <a href="@permissions">access environment indicator</a> permission must be enabled for a user role in order for users of that role to see the indicator.', ['@permissions' => url('admin/people/permissions', ['fragment' => 'module-environment_indicator'])]) .'</p>';
+      $output .= '<p>' . t('The Environment Indicator\'s visibility depends upon the permissions of the viewer. The <a href="@permissions">access environment indicator</a> permission must be enabled for a user role in order for users of that role to see the indicator.', ['@permissions' => url('admin/people/permissions', ['fragment' => 'module-environment_indicator'])]) . '</p>';
 
-      $output .= '<p>'. t('The settings for the Environment Indicator, such as the text to display and the color can be overridden for each of your specific environments using the configuration UI or in the site\'s settings.php file. You can also export this configuration to code, this allows you to customise the indicator for each environment without needing to make any changes in the database. This means that the Environment Indicator will always display correctly when moving your site from development to staging to production. If you choose to detect your environment using settings.php, then all configuration variables can be overridden in settings.php, but the most common three are:') .'</p>';
+      $output .= '<p>' . t("The settings for the Environment Indicator, such as the text to display and the color can be overridden for each of your specific environments using the configuration UI or in the site\'s settings.php file. You can also export this configuration to code, this allows you to customise the indicator for each environment without needing to make any changes in the database. This means that the Environment Indicator will always display correctly when moving your site from development to staging to production. If you choose to detect your environment using settings.php, then all configuration variables can be overridden in settings.php, but the most common three are:") . '</p>';
       $output .= '<dl>';
-      $output .= '<dt><em>environment_indicator_overwrite</em></dt><dd>'. t('A boolean value indicating whether the Environment Indicator should use the settings.php variables for the indicator. On your production environment, you should probably set this to FALSE.') . '<br/>$conf[\'environment_indicator_overwrite\'] = FALSE;<br />* ' . t('This setting corresponds to the old %setting in version 1.x.', ['%setting' => 'environment_indicator_enabled']) . '</dd></dt>';
-      $output .= '<dt><em>environment_indicator_overwritten_name</em></dt><dd>'. t('The text that will be displayed on the indicator.') . '<br/>$conf[\'environment_indicator_overwritten_name\'] = \'Staging\';<br />* ' . t('This setting corresponds to the old %setting in version 1.x.', array('%setting' => 'environment_indicator_text')) . '</dd></dt>';
-      $output .= '<dt><em>environment_indicator_overwritten_color</em></dt><dd>'. t('A valid css color.') . '<br/>$conf[\'environment_indicator_overwritten_color\'] = \'#F55\';<br />* ' . t('This setting corresponds to the old %setting in version 1.x.', array('%setting' => 'environment_indicator_color')) . '</dd></dt>';
-      $output .= '<dt><em>environment_indicator_overwritten_position</em></dt><dd>'. t('Where your indicator may appear. Allowed values are "top" and "bottom".') . '<br/>$conf[\'environment_indicator_overwritten_position\'] = \'top\';</dd></dt>';
-      $output .= '<dt><em>environment_indicator_overwritten_fixed</em></dt><dd>'. t('A boolean value indicating whether the Environment Indicator should be visible at all times, fixed at the top/bottom of the screen.') . '<br/>$conf[\'environment_indicator_overwritten_fixed\'] = FALSE;</dd></dt>';
+      $output .= '<dt><em>environment_indicator_overwrite</em></dt><dd>' . t('A boolean value indicating whether the Environment Indicator should use the settings.php variables for the indicator. On your production environment, you should probably set this to FALSE.') . '<br/>$conf[\'environment_indicator_overwrite\'] = FALSE;<br />* ' . t('This setting corresponds to the old %setting in version 1.x.', ['%setting' => 'environment_indicator_enabled']) . '</dd></dt>';
+      $output .= '<dt><em>environment_indicator_overwritten_name</em></dt><dd>' . t('The text that will be displayed on the indicator.') . '<br/>$conf[\'environment_indicator_overwritten_name\'] = \'Staging\';<br />* ' . t('This setting corresponds to the old %setting in version 1.x.', array('%setting' => 'environment_indicator_text')) . '</dd></dt>';
+      $output .= '<dt><em>environment_indicator_overwritten_color</em></dt><dd>' . t('A valid css color.') . '<br/>$conf[\'environment_indicator_overwritten_color\'] = \'#F55\';<br />* ' . t('This setting corresponds to the old %setting in version 1.x.', array('%setting' => 'environment_indicator_color')) . '</dd></dt>';
+      $output .= '<dt><em>environment_indicator_overwritten_position</em></dt><dd>' . t('Where your indicator may appear. Allowed values are "top" and "bottom".') . '<br/>$conf[\'environment_indicator_overwritten_position\'] = \'top\';</dd></dt>';
+      $output .= '<dt><em>environment_indicator_overwritten_fixed</em></dt><dd>' . t('A boolean value indicating whether the Environment Indicator should be visible at all times, fixed at the top/bottom of the screen.') . '<br/>$conf[\'environment_indicator_overwritten_fixed\'] = FALSE;</dd></dt>';
       $output .= '</dl>';
 
       return $output;
@@ -47,11 +48,11 @@ function environment_indicator_load($name) {
  * Implements hook_page_build().
  */
 function environment_indicator_page_attachments(&$page) {
- $manager = \Drupal::getContainer()->get('environment_indicator.manager');
+  $manager = \Drupal::getContainer()->get('environment_indicator.manager');
   $page['#attached']['library'][] = 'environment_indicator/drupal.environment_indicator';
   if ($match = $manager->getActiveIndicator()) {
-    if ($manager->environment_indicator_check_access($match)) {
-      if ($manager->environment_indicator_needs_js()) {
+    if ($manager->environmentIndicatorCheckAccess($match)) {
+      if ($manager->environmentIndicatorNeedsJs()) {
         $page['#attached']['drupalSettings']['environment_indicator']['toolbar-color'] = $match->getColor();
       }
     }
@@ -62,37 +63,51 @@ function environment_indicator_page_attachments(&$page) {
  * Implements hook_toolbar().
  */
 function environment_indicator_toolbar() {
-  $items = array();
+  $items = [];
   $manager = \Drupal::getContainer()->get('environment_indicator.manager');
   $environment_info = $manager->getActiveIndicator();
   if (!empty($environment_info)) {
-      $shortcut_set = shortcut_current_displayed_set();
-        $items['environment_indicator'] = [
-          '#type' => 'toolbar_item',
-          'tab' => [
-            '#type' => 'link',
-            '#title' => $environment_info->label(),
-            '#url' => $shortcut_set->urlInfo('collection'),
-            '#attributes' => [
-              'title' => $environment_info->label(),
-              'class' => ['toolbar-icon', 'toolbar-icon-environment'],
-            ],
+    $shortcut_set = shortcut_current_displayed_set();
+    $items['environment_indicator'] = [
+      '#type' => 'toolbar_item',
+      'tab' => [
+        '#type' => 'link',
+        '#title' => $environment_info->label(),
+        '#url' => $shortcut_set->urlInfo('collection'),
+        '#attributes' => [
+          'title' => $environment_info->label(),
+          'class' => ['toolbar-icon', 'toolbar-icon-environment'],
+        ],
 
-          ],
-          'tray' => [
-            '#heading' => t('User-defined Environments'),
-            'shortcuts' => [],
-            'configure' => [
-              '#type' => 'link',
-              '#title' => t('Add Environmen Indicator'),
-              '#url' => Url::fromRoute('environment_indicator.list'),
-              '#options' => ['attributes' => ['class' => ['edit-environment-indicator']]],
-            ],
-          ],
-          '#weight' => -10,
-          '#attached' =>['library'=>['environment_indicator/drupal.environment_indicator']],
-        ];
-      }
+      ],
+      'tray' => [
+        '#heading' => t('User-defined Environments'),
+        'shortcuts' => [],
+        'configure' => [
+          '#type' => 'link',
+          '#title' => t('Add Environmen Indicator'),
+          '#url' => Url::fromRoute('environment_indicator.list'),
+          '#options' => ['attributes' => ['class' => ['edit-environment-indicator']]],
+        ],
+      ],
+      '#weight' => 200,
+      '#attached' => ['library' => ['environment_indicator/drupal.environment_indicator']],
+    ];
+  }
   return $items;
 }
 
+/**
+ *          '#theme' => 'links__toolbar_shortcuts',
+'#links' => [
+[
+'#type' => 'link',
+'#title' => t('Add Environmen Indicator'),
+'#url' => Url::fromRoute('environment_indicator.list'),
+'#options' => ['attributes' => ['class' => ['environment-indicator-active']]],
+]
+],
+'#attributes' => [
+'class' => ['toolbar-menu'],
+],
+ */

@@ -1,10 +1,22 @@
 <?php
+
+/**
+ * @file
+ * Contains \Drupal\environment_indicator\Form\EnvironmentIndicatorForm.
+ */
+
 namespace Drupal\environment_indicator\Entity\Form;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityForm;
 
-class EnvironmentIndicatorForm extends EntityForm{
+/**
+ * Class EnvironmentIndicatorForm.
+ *
+ * @package Drupal\environment_indicator\Entity\Form
+ */
+class EnvironmentIndicatorForm extends EntityForm {
+
   /**
    * This actually builds your form.
    */
@@ -108,7 +120,10 @@ class EnvironmentIndicatorForm extends EntityForm{
 
     $entity = $this->getEntity();
     //@todo fix it
-    $form_state->setFormstate(['admin/config/development/environment-indicator/manage/' . $entity->id() . '/delete', ['query' => $destination]]);
+    $form_state->setFormstate([
+      'admin/config/development/environment-indicator/manage/' . $entity->id() . '/delete',
+      ['query' => $destination]
+    ]);
   }
 
 }
