@@ -60,7 +60,7 @@ class EnvironmentIndicatorForm extends EntityForm {
       ],
     ];
     $form['help'] = [
-      '#markup' => t('You don\'t need to care about position and fixed if you are using the toolbar. If you use the toolbar module, then the environment indicator will be integrated.'),
+      '#markup' => t("You don't need to care about position and fixed if you are using the toolbar. If you use the toolbar module, then the environment indicator will be integrated."),
     ];
     $form['position'] = [
       '#title' => t('Position'),
@@ -82,6 +82,9 @@ class EnvironmentIndicatorForm extends EntityForm {
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function submit(array $form, FormStateInterface $form_state) {
     // Build the entity object from the submitted values.
     $entity = parent::submit($form, $form_state);

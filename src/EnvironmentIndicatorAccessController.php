@@ -8,7 +8,6 @@
 namespace Drupal\environment_indicator;
 
 use Drupal\Core\Entity\EntityAccessControlHandler;
-use Drupal\Core\Entity\EntityAccessController;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
@@ -23,7 +22,7 @@ class EnvironmentIndicatorAccessController extends EntityAccessControlHandler {
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, $langcode, AccountInterface $account) {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     return AccessResult::allowedIfHasPermission($account, 'administer environment indicator settings');
   }
 

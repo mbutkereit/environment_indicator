@@ -67,6 +67,23 @@ function environment_indicator_toolbar() {
   $manager = \Drupal::getContainer()->get('environment_indicator.manager');
   $environment_info = $manager->getActiveIndicator();
   if (!empty($environment_info)) {
+    $environments = $manager->getAllEnvironmentIndicators();
+    $links = [];
+    foreach ($environments as $element) {
+      $links[] = [
+        '#type' => 'link',
+        '#title' => $element->label,
+        '#url' => Url::fromUri('http://' . $element->regexurl),
+        '#options' => [
+          'attributes' =>
+            [
+              'class' =>
+                ['environment-indicator-item'],
+              'style' => ['border: 3px solid ' . $element->color . ';'],
+            ],
+        ],
+      ];
+    }
     $shortcut_set = shortcut_current_displayed_set();
     $items['environment_indicator'] = [
       '#type' => 'toolbar_item',
@@ -82,7 +99,7 @@ function environment_indicator_toolbar() {
       ],
       'tray' => [
         '#heading' => t('User-defined Environments'),
-        'shortcuts' => [],
+        'shortcuts' => $links,
         'configure' => [
           '#type' => 'link',
           '#title' => t('Add Environmen Indicator'),
@@ -94,20 +111,6 @@ function environment_indicator_toolbar() {
       '#attached' => ['library' => ['environment_indicator/drupal.environment_indicator']],
     ];
   }
+
   return $items;
 }
-
-/**
- *          '#theme' => 'links__toolbar_shortcuts',
-'#links' => [
-[
-'#type' => 'link',
-'#title' => t('Add Environmen Indicator'),
-'#url' => Url::fromRoute('environment_indicator.list'),
-'#options' => ['attributes' => ['class' => ['environment-indicator-active']]],
-]
-],
-'#attributes' => [
-'class' => ['toolbar-menu'],
-],
- */
