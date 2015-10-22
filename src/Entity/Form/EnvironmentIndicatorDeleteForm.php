@@ -19,13 +19,6 @@ class EnvironmentIndicatorDeleteForm extends EntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormID() {
-    return 'environment_indicator_environment_confirm_delete';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getQuestion() {
     return t('Are you sure you want to delete the environment indicator %title?', ['%title' => $this->entity->label()]);
   }
@@ -57,10 +50,10 @@ class EnvironmentIndicatorDeleteForm extends EntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submit(array $form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->entity->delete();
     drupal_set_message(t('Deleted environment %name.', ['%name' => $this->entity->label()]));
-    watchdog('environment', 'Deleted environment %name.', ['%name' => $this->entity->label()], WATCHDOG_NOTICE);
+    \Drupal::logger('my_module')->notice(t('Deleted environment %name.', ['%name' => $this->entity->label()]));
     $form_state->setRedirect('environment_indicator.list');
     Cache::invalidateTags(['content' => TRUE]);
   }
@@ -69,6 +62,7 @@ class EnvironmentIndicatorDeleteForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return t('Delete');
+    return t('Deletef');
   }
+
 }

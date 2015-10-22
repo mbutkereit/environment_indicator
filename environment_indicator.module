@@ -84,13 +84,12 @@ function environment_indicator_toolbar() {
         ],
       ];
     }
-    $shortcut_set = shortcut_current_displayed_set();
     $items['environment_indicator'] = [
       '#type' => 'toolbar_item',
       'tab' => [
         '#type' => 'link',
         '#title' => $environment_info->label(),
-        '#url' => $shortcut_set->urlInfo('collection'),
+        '#url' => Url::fromRoute('environment_indicator.list'),
         '#attributes' => [
           'title' => $environment_info->label(),
           'class' => ['toolbar-icon', 'toolbar-icon-environment'],

@@ -74,8 +74,9 @@ class EnvironmentIndicatorListController extends ConfigEntityListBuilder impleme
           'class' => ['environment-indicator-color'],
           'style' => 'border: 3px solid ' . $entity->get('color') . ';',
         ],
-      ]
+      ],
     ];
+    $row['operations']['data'] = $this->buildOperations($entity);
     $row += parent::buildRow($entity);
     unset($row['id']);
     unset($row['label']);

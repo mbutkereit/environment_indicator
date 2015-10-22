@@ -24,7 +24,7 @@ use Drupal\environment_indicator\EnvironmentIndicatorInterface;
  *     "list_builder" = "Drupal\environment_indicator\Entity\Controller\EnvironmentIndicatorListController",
  *     "form" = {
  *       "default" = "Drupal\environment_indicator\Entity\Form\EnvironmentIndicatorForm",
- *       "delete" = "Drupal\environment_indicator\Entity\Form\EnvironmentIndicatorDeleteForm"
+ *       "delete" =  "Drupal\environment_indicator\Entity\Form\EnvironmentIndicatorDeleteForm"
  *     }
  *   },
  *   admin_permission = "administer environment indicator settings",
@@ -34,9 +34,9 @@ use Drupal\environment_indicator\EnvironmentIndicatorInterface;
  *     "weight" = "weight"
  *   },
  *   links = {
- *     "canonical" = "/environment_indicator/update",
- *     "edit-form" = "/admin/environment_indicator/update",
- *     "delete-form" = "/admin/environment_indicator/delete"
+ *     "canonical" = "/environment_indicator/{entity}/update",
+ *     "edit-form" = "/admin/environment_indicator/{entity}/update",
+ *     "delete-form" = "/admin/environment_indicator/{entity}/delete"
  *   },
  *   config_export = {
  *     "id",
