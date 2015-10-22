@@ -71,20 +71,21 @@ function environment_indicator_toolbar() {
     $links = [];
     foreach ($environments as $element) {
       $links[] = [
-        '#type' => 'link',
-        '#title' => $element->label,
-        '#url' => Url::fromUri('http://' . $element->regexurl),
-        '#options' => [
-          'attributes' =>
-            [
-              'class' =>
-                ['environment-indicator-item'],
-              'style' => ['border: 3px solid ' . $element->color . ';'],
-            ],
-        ],
+        'type' => 'link',
+        'title' => $element->label,
+        'url' => Url::fromUri('http://' . $element->regexurl),
+        'attributes' =>
+          [
+            'style' => ['border: 3px solid ' . $element->color . ';'],
+          ],
       ];
     }
     $items['environment_indicator'] = [
+      '#cache' => [
+        'contexts' => [
+          'user',
+        ],
+      ],
       '#type' => 'toolbar_item',
       'tab' => [
         '#type' => 'link',
@@ -98,7 +99,16 @@ function environment_indicator_toolbar() {
       ],
       'tray' => [
         '#heading' => t('User-defined Environments'),
-        'shortcuts' => $links,
+        'shortcuts' => array(
+          '#theme' => 'links__toolbar_environment_indicator',
+          '#links' => $links,
+          '#attributes' => array(
+            'class' => array('toolbar-menu'),
+          ),
+          '#cache' => array(
+            'tags' => ['user'],
+          ),
+        ),
         'configure' => [
           '#type' => 'link',
           '#title' => t('Add Environmen Indicator'),
