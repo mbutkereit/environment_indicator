@@ -1,0 +1,5 @@
+{
+  "name": "drupal/environment_indicator",
+  "description": "Adds a color indicator for the different environments.",
+  "type": "drupal-module"
+}
